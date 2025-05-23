@@ -2,14 +2,14 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/icon', 'nuxt-security'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/icon', 'nuxt-security', '@pinia/nuxt'],
 
   css: ['~/assets/css/main.css'],
 
   eslint: {
     // checker: true,
   },
-  
+
   security: {
     // rateLimiter: false,
     nonce: true,
