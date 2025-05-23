@@ -1,0 +1,11 @@
+<template>
+  <div class="min-h-screen flex flex-col">
+    <custom-navigation />
+    
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <custom-footer />
+  </div>
+</template>
