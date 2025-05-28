@@ -10,17 +10,14 @@ const walletConnected = ref(false);
 
 export const useEthereum = () => {
   
-  // Reactive state
   const balance = ref<string>('');
   const provider = shallowRef<ethers.BrowserProvider | null>(null);
   const signer = shallowRef<ethers.Signer | null>(null);
 
-  // Computed
   const shortAddress = computed(() =>
     address.value ? `${address.value.slice(0, 6)}...${address.value.slice(-4)}` : ''
   );
 
-  // Methods
   const initializeProvider = () => {
     if (import.meta.client && window.ethereum) {
       provider.value = new ethers.BrowserProvider(window.ethereum);
