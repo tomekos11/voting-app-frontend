@@ -41,6 +41,17 @@ export default defineNuxtConfig({
     }
   },
 
+  nitro: {
+    routeRules: {
+      '/api/voting/**': {
+        cache: {
+          maxAge: 60 * 15, // 15 minut cache na serwerze
+          swr: true // Stale-While-Revalidate
+        }
+      }
+    }
+  },
+  
   runtimeConfig: {
     public: {
       API_URL: import.meta.env.NUXT_PUBLIC_API_URL,

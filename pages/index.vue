@@ -1,9 +1,15 @@
 <template>
   <div class="text-center">
     <UButton
-      :label="address ? `Połączono: ${shortAddress}` : 'Połącz z MetaMask'"
+      v-if="!address"
+      label="Połącz z MetaMask"
       @click="connect"
     />
+    <div v-else>
+      {{ shortAddress }}
+    </div>
+
+
     <div v-if="balance" class="mt-4 text-white">
       Saldo: {{ balance }} ETH
     </div>

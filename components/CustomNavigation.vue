@@ -32,17 +32,30 @@
       />
     </div>
 
-
-    <UButton 
-      v-if="address"
-      :label="address ? `Połączono: ${shortAddress}` : 'Połącz z MetaMask'" 
-      @click="connect" 
-    />
+    <div class="ml-10">
+      <template v-if="isClient && walletConnected !== null && initialized">
+        <UButton
+          v-if="!address"
+          label="Połącz z MetaMask"
+          @click="connect"
+        />
+        <div v-else class="text-sm text-center">
+          <div>
+            {{ shortAddress }}
+          </div>
+          <div class="text-cyan-400">{{ role }}</div>
+        </div>
+      </template>
+      
+    </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-const { address, shortAddress, connect } = useEthereum();
+const { address, shortAddress, walletConnected, connect } = useEthereum();
+const { role, initialized, } = useVoting();
+
+const isClient = computed(() => import.meta.client);
 
 </script>
 

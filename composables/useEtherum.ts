@@ -1,16 +1,19 @@
 // composables/useEthereum.ts
 import { ethers } from 'ethers';
-import abi from '~/abi.json';
+import { Abi__factory } from '~/types';
+
+const contractAddress = '0xa00998b1c48affdebb1d1c6499857a1f262a4e66';
+
+const address = ref<string>('');
+const isInitialized = ref(false);
+const walletConnected = ref(false);
 
 export const useEthereum = () => {
-  const contractAddress = '0xa00998b1c48affdebb1d1c6499857a1f262a4e66';
   
   // Reactive state
-  const address = ref<string>('');
   const balance = ref<string>('');
   const provider = shallowRef<ethers.BrowserProvider | null>(null);
   const signer = shallowRef<ethers.Signer | null>(null);
-  const isInitialized = ref(false);
 
   // Computed
   const shortAddress = computed(() =>
@@ -19,21 +22,21 @@ export const useEthereum = () => {
 
   // Methods
   const initializeProvider = () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
+    if (import.meta.client && window.ethereum) {
       provider.value = new ethers.BrowserProvider(window.ethereum);
       return true;
     }
     return false;
   };
 
-  const handleAccountsChanged = async (accounts: string[]) => {
-    address.value = accounts[0] || '';
-    await updateBalance();
-  };
+  // const handleAccountsChanged = async (accounts: string[]) => {
+  //   address.value = accounts[0] || '';
+  //   await updateBalance();
+  // };
 
-  const handleChainChanged = () => {
-    window.location.reload();
-  };
+  // const handleChainChanged = () => {
+  //   window.location.reload();
+  // };
 
   const updateBalance = async () => {
     if (provider.value && address.value) {
@@ -57,33 +60,38 @@ export const useEthereum = () => {
       address.value = accounts[0];
       signer.value = await provider.value!.getSigner();
       
-      window.ethereum!.on('accountsChanged', handleAccountsChanged);
-      window.ethereum!.on('chainChanged', handleChainChanged);
+      // window.ethereum!.on('accountsChanged', handleAccountsChanged);
+      // window.ethereum!.on('chainChanged', handleChainChanged);
       
       await updateBalance();
-      
+      walletConnected.value = true;
+
     } catch (error) {
       console.error('Błąd połączenia:', error);
+      walletConnected.value = false;
       throw error;
     }
   };
 
-  const getContract = async () => {
-    if (!signer.value) {
-      await connect();
-    }
-    return new ethers.Contract(contractAddress, abi, signer.value!);
+  const getContract = () => {
+    const runner = signer.value || provider.value;
+    if (!runner) throw new Error('Brak połączenia z blockchainem');
+    
+    return Abi__factory.connect(contractAddress, runner);
   };
 
   // Initialize
-  if (typeof window !== 'undefined') {
+  if (import.meta.client) {
     initializeProvider();
     
+    // Auto-connect jeśli portfel już podłączony
     window.ethereum?.request({ method: 'eth_accounts' })
-      .then(accounts => {
+      .then(async accounts => {
         if (accounts?.length) {
           address.value = accounts[0];
-          updateBalance();
+          signer.value = await provider.value!.getSigner();
+          await updateBalance();
+          walletConnected.value = true;
         }
         isInitialized.value = true;
       })
@@ -95,6 +103,7 @@ export const useEthereum = () => {
     shortAddress: readonly(shortAddress),
     balance: readonly(balance),
     isInitialized: readonly(isInitialized),
+    walletConnected: readonly(walletConnected),
     connect,
     getContract
   };
