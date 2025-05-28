@@ -1,47 +1,48 @@
 <template>
   <UButton @click="whoAmI">Kim jestem?</UButton>
-  <div v-if="rola">
-    Twoja rola: <strong>{{ rola }}</strong>
+  <div v-if="role">
+    Twoja rola: <strong>{{ role }}</strong>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-const { $getContract } = useNuxtApp();
+const { address, connect,  getContract } = useEthereum(); // Używaj 'ethereum', nie '$ethereum'
 
-const rola = ref<string | null>(null);
+const role = ref<string | null>(null);
 
 const whoAmI = async () => {
   try {
-    const contract = await $getContract();
+    // Upewnij się, że użytkownik jest połączony z portfelem
+    if (!address.value) {
+      await connect();
+    }
 
-    // Pobierz aktualny adres użytkownika z MetaMask
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const address = accounts[0];
+    const contract = await getContract();
 
     // Sprawdź role
     const chairman = await contract.chairman();
-    if (address.toLowerCase() === chairman.toLowerCase()) {
-      rola.value = 'Chairman';
+    if (address.value.toLowerCase() === chairman.toLowerCase()) {
+      role.value = 'Chairman';
       return;
     }
 
     const isAdmin = await contract.admins(address);
     if (isAdmin) {
-      rola.value = 'Admin';
+      role.value = 'Admin';
       return;
     }
 
     const isVoter = await contract.voters(address);
     if (isVoter) {
-      rola.value = 'Uprawniony do głosowania';
+      role.value = 'Uprawniony do głosowania';
       return;
     }
 
-    rola.value = 'Nieuprawniony do głosowania';
+    role.value = 'Nieuprawniony do głosowania';
   } catch (error) {
     console.error('Błąd:', error);
-    rola.value = 'Błąd podczas sprawdzania roli';
+    role.value = 'Błąd podczas sprawdzania roli';
   }
 };
 </script>
