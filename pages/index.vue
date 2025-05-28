@@ -9,16 +9,19 @@
       Saldo: {{ balance }} ETH
     </div>
 
-    <UButton 
+    <who-am-i/>
+
+    <!-- <UButton 
       v-if="address" 
       label="Rozłącz portfel" 
       class="mt-2" 
       @click="disconnectWallet"
-    />
+    /> -->
   </div>
 </template>
 
 <script setup lang="ts">
+// adres kontaktu 0xa00998b1c48affdebb1d1c6499857a1f262a4e66
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { ethers } from 'ethers';
 
