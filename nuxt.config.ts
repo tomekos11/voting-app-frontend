@@ -20,7 +20,7 @@ export default defineNuxtConfig({
     headers: {
       contentSecurityPolicy: {
         'default-src': ['\'self\''],
-        'connect-src': ['\'self\'', import.meta.env.NUXT_PUBLIC_API_URL, import.meta.env.NUXT_PUBLIC_API_URL_HTTPS],
+        'connect-src': ['\'self\'', 'https://sepolia.infura.io', import.meta.env.NUXT_PUBLIC_API_URL, import.meta.env.NUXT_PUBLIC_API_URL_HTTPS],
         'script-src': ['\'self\'', '\'nonce-{{nonce}}\'', '\'strict-dynamic\''],
         'style-src': ['\'self\'', '\'nonce-{{nonce}}\''],
         'img-src': ['\'self\'', 'data:', 'blob:', import.meta.env.NUXT_PUBLIC_API_URL, import.meta.env.NUXT_PUBLIC_API_URL_HTTPS],
@@ -53,6 +53,7 @@ export default defineNuxtConfig({
   },
   
   runtimeConfig: {
+    INFURA_API_KEY: process.env.INFURA_API_KEY,
     public: {
       API_URL: import.meta.env.NUXT_PUBLIC_API_URL,
       API_URL_HTTPS: import.meta.env.NUXT_PUBLIC_API_URL_HTTPS,

@@ -95,6 +95,10 @@ export const useEthereum = () => {
       .catch(console.error);
   }
 
+  watch(address, (nv) => {
+    console.log(nv);
+  });
+
   return {
     address: readonly(address),
     shortAddress: readonly(shortAddress),

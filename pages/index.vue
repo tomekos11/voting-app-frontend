@@ -14,9 +14,16 @@
       Saldo: {{ balance }} ETH
     </div>
     <who-am-i />
+
+
+    {{ data }}
+    <!-- <UButton label="Kliknij tutaj" @click="xd" /> -->
   </div>
 </template>
 
 <script setup lang="ts">
 const { address, shortAddress, balance, connect } = useEthereum();
+
+const { data } = await useFetch('/api/blockchain');
+
 </script>
