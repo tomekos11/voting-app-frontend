@@ -82,6 +82,8 @@ export interface AbiInterface extends Interface {
       | "voters(address)"
       | "votingCount"
       | "votingCount()"
+      | "getVoting"
+      | "getVoting(uint256)"
   ): FunctionFragment;
 
   getEvent(
@@ -211,6 +213,14 @@ export interface AbiInterface extends Interface {
     functionFragment: "votingCount()",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "getVoting",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVoting(uint256)",
+    values: [BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "addAdmin", data: BytesLike): Result;
   decodeFunctionResult(
@@ -317,6 +327,11 @@ export interface AbiInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "votingCount()",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getVoting", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getVoting(uint256)",
     data: BytesLike
   ): Result;
 }
@@ -602,6 +617,18 @@ export interface Abi extends BaseContract {
 
   "votingCount()": TypedContractMethod<[], [bigint], "view">;
 
+  getVoting: TypedContractMethod<
+    [id: BigNumberish],
+    [VotingSystem.VotingInfoStructOutput],
+    "view"
+  >;
+
+  "getVoting(uint256)": TypedContractMethod<
+    [id: BigNumberish],
+    [VotingSystem.VotingInfoStructOutput],
+    "view"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -792,6 +819,20 @@ export interface Abi extends BaseContract {
   getFunction(
     nameOrSignature: "votingCount()"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getVoting"
+  ): TypedContractMethod<
+    [id: BigNumberish],
+    [VotingSystem.VotingInfoStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getVoting(uint256)"
+  ): TypedContractMethod<
+    [id: BigNumberish],
+    [VotingSystem.VotingInfoStructOutput],
+    "view"
+  >;
 
   getEvent(
     key: "VotingCreated"

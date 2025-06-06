@@ -1,4 +1,4 @@
-// stores/voting.ts
+import { whenever } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { shallowRef, type ShallowRef } from 'vue';
 import type { Abi } from '~/types';
@@ -6,7 +6,7 @@ import type { Voting } from '~/types/types';
 
 export const useVotingStore = defineStore('voting', () => {
   const ethereumStore = useEthereumStore();
-  const contract = shallowRef<Abi>();
+  const contract = shallowRef<Abi | null>(null);
   
   // State
   const initialized = ref(false);
@@ -72,10 +72,62 @@ export const useVotingStore = defineStore('voting', () => {
     return { data: votings[type], total: Number(total) };
   };
 
-  const initialize = async () => {
-    if (initialized.value) return;
+  const vote = async (votingId: number, propositionId: number) => {
+    if (!contract.value) {
+      throw new Error('Kontrakt nie został zainicjalizowany');
+    }
 
-    contract.value = ethereumStore.getContract();
+    if (!ethereumStore.address) {
+      throw new Error('Nie połączono z portfelem');
+    }
+
+    try {
+    // Weryfikacja uprawnień
+      const isVoter = await contract.value.voters(ethereumStore.address);
+      if (!isVoter) {
+        throw new Error('Brak uprawnień do głosowania');
+      }
+
+      // Wyślij transakcję
+      const tx = await contract.value.vote(
+        BigInt(votingId),
+        BigInt(propositionId)
+      );
+
+      // Czekaj na potwierdzenie
+      const receipt = await tx.wait();
+      if (!receipt?.status) {
+        throw new Error('Transakcja nie została potwierdzona');
+      }
+
+      // Aktualizuj dane
+      //   await fetchVotings('active', 0, 5);
+      //   await fetchVotings('completed', 0, 5);
+
+      return receipt;
+
+    } catch (error) {
+      if (error instanceof Error) {
+      // Specjalna obsługa błędów MetaMask
+        if (error.message.includes('user rejected transaction')) {
+          throw new Error('Anulowano przez użytkownika');
+        }
+        if (error.message.includes('insufficient funds')) {
+          throw new Error('Niewystarczające środki na gaz');
+        }
+        if (error.message.includes('already voted')) {
+          throw new Error('Już zagłosowano w tym głosowaniu');
+        }
+      }
+      throw new Error(`Błąd głosowania: ${error instanceof Error ? error.message : 'Nieznany błąd'}`);
+    }
+  };
+
+
+  const initialize = async () => {
+    if (initialized.value && ethereumStore.contract) return;
+
+    contract.value = ethereumStore.contract;
     await Promise.all([
       checkRole(),
     //   fetchVotings('incoming', 0, 5),
@@ -87,7 +139,7 @@ export const useVotingStore = defineStore('voting', () => {
   };
 
 
-  watch(() => ethereumStore.getContract(), () => {
+  whenever(() => ethereumStore.contract, () => {
     initialize();
   });
 
@@ -105,6 +157,7 @@ export const useVotingStore = defineStore('voting', () => {
     // Actions
     checkRole,
     fetchVotings,
-    initialize
+    vote,
+    initialize,
   };
 });

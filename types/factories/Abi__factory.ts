@@ -458,6 +458,57 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "getVoting",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "title",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "propositions",
+            type: "bytes32[]",
+          },
+          {
+            internalType: "enum VotingSystem.VotingType",
+            name: "votingType",
+            type: "uint8",
+          },
+        ],
+        internalType: "struct VotingSystem.VotingInfo",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ] as const;
 
 export class Abi__factory {

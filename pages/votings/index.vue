@@ -1,6 +1,11 @@
 <template>
   <div class="space-y-8">
     <!-- Aktywne głosowania - karuzela -->
+
+    <section v-if="noData">
+      Brak stworzonych głosowań.
+    </section>
+
     <section v-if="activeVotings.length">
       <h2 class="text-2xl font-bold mb-4">Aktywne głosowania</h2>
       <UCarousel 
@@ -59,7 +64,7 @@
             <UButton 
               block
               label="Zagłosuj"
-              @click="navigateTo(`/voting/${item.id}`)"
+              @click="navigateTo(`/votings/${item.id}`)"
             />
           </div>
         </UCard>
@@ -104,19 +109,22 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { useInterval } from '@vueuse/core';
+// import { useInterval } from '@vueuse/core';
 import type { Voting } from '~/types/types';
 
 const votingStore = useVotingStore();
 const now = ref(DateTime.now());
 
 // Automatyczna aktualizacja czasu co sekundę
-useInterval(1000, () => {
-  now.value = DateTime.now();
-});
+// useInterval(1000, () => {
+//   now.value = DateTime.now();
+// });
 
 const activeVotings = computed(() => votingStore.votings.active);
 const incomingVotings = computed(() => votingStore.votings.incoming);
+const completedVotings = computed(() => votingStore.votings.completed);
+
+const noData = computed(() => !activeVotings.value.length && !incomingVotings.value.length && !completedVotings.value.length);
 
 const formatDate = (timestamp: number) => {
   return DateTime.fromSeconds(timestamp).toFormat('dd.MM.yyyy HH:mm');

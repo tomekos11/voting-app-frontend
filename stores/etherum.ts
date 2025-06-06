@@ -1,9 +1,8 @@
-// stores/ethereum.ts
 import { defineStore } from 'pinia';
 import { ethers } from 'ethers';
 import { shallowRef, computed } from 'vue';
 import { whenever } from '@vueuse/core';
-import { Abi__factory } from '~/types';
+import { Abi__factory, type Abi } from '~/types';
 import { contractAddress } from '~/config';
 
 export const useEthereumStore = defineStore('ethereum', () => {
@@ -14,6 +13,8 @@ export const useEthereumStore = defineStore('ethereum', () => {
   const walletConnected = ref(false);
   const provider = shallowRef<ethers.BrowserProvider | null>(null);
   const signer = shallowRef<ethers.Signer | null>(null);
+
+  const contract = ref<Abi | null>(null);
 
   // Getters
   const shortAddress = computed(() =>
@@ -65,7 +66,9 @@ export const useEthereumStore = defineStore('ethereum', () => {
     const runner = signer.value || provider.value;
     if (!runner) throw new Error('Brak połączenia z blockchainem');
     
-    return Abi__factory.connect(contractAddress, runner);
+    contract.value = Abi__factory.connect(contractAddress, runner);
+
+    return contract.value;
   };
 
   // Auto-connect i śledzenie zmian
@@ -78,6 +81,8 @@ export const useEthereumStore = defineStore('ethereum', () => {
         address.value = accounts[0];
         provider.value = new ethers.BrowserProvider(window.ethereum);
         signer.value = await provider.value.getSigner();
+
+        getContract();
         await updateBalance();
         walletConnected.value = true;
       }
@@ -115,13 +120,12 @@ export const useEthereumStore = defineStore('ethereum', () => {
     walletConnected,
     provider,
     signer,
-    
+    contract,
     // Getters
     shortAddress,
     
     // Actions
     connect,
-    getContract,
     updateBalance
   };
 });

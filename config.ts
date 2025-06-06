@@ -1,5 +1,5 @@
 
-export const contractAddress = '0x7e673b042fda133da69ee827cdc32e31df63d15f';
+export const contractAddress = '0xd6a85f83fb61653942e10706e42752e28f66432a';
 
 export const contractABI = [
   'function votingCount() view returns (uint256)',

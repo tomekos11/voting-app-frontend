@@ -14,5 +14,6 @@ export interface Voting {
   title: string;
   startTime: number;
   endTime: number;
+  votingType: 0 | 1 | 'Public' | 'Private';
   propositions: string[];
 }

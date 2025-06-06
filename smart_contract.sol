@@ -144,6 +144,19 @@ contract VotingSystem {
         return "Completed";
     }
 
+    function getVoting(uint256 id) public view returns (
+        uint256,
+        string memory,
+        uint256,
+        uint256,
+        bytes32[] memory,
+        VotingType
+    ) {
+        Voting storage v = votings[id];
+        require(v.exists, "Voting does not exist");
+        return (v.id, v.title, v.startTime, v.endTime, v.propositions, v.votingType);
+    }
+
     function getPropositions(uint256 votingId) public view returns (bytes32[] memory) {
         Voting storage voting = votings[votingId];
         require(voting.exists, "Voting does not exist");
@@ -204,7 +217,6 @@ contract VotingSystem {
     // KONIEC STATYSTYK
     //
     //
-
 
     // pobierz liste aktywnych głosowań
     function getActiveVotings(
