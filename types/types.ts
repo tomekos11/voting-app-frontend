@@ -6,12 +6,13 @@ export interface Detail {
 export interface PropositionOffChain {
   name: string;
   img?: string;
-  details: Detail[]
+  details: Detail[];
 }
 
 export interface Voting {
-  id: number
-  title: string
-  startTime: number
-  endTime: number
+  id: number;
+  title: string;
+  startTime: number;
+  endTime: number;
+  propositions: string[];
 }

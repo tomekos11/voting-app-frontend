@@ -1,16 +1,7 @@
 // lib/blockchain.ts
 import { ethers } from 'ethers';
+import { contractABI, contractAddress } from '~/config';
 
-
-// export const contractAddress = '0xa00998b1c48affdebb1d1c6499857a1f262a4e66';
-export const contractAddress = '0xff33339cc17c98d4df6aa37b19139bacc958fac9';
-
-// Minimalny ABI dla potrzebnych funkcji
-const contractABI = [
-  'function votingCount() view returns (uint256)',
-  'function getVotingStatus(uint256) view returns (string)',
-  'function getCandidateCount(uint256) view returns (uint256)'
-];
 
 export async function getVotingData() {
   const config = useRuntimeConfig();

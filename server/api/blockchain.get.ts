@@ -1,11 +1,5 @@
 import { ethers } from 'ethers';
-import { contractAddress } from '~/composables/test';
-
-const contractABI = [
-  'function votingCount() view returns (uint256)',
-  'function getVotingStatus(uint256) view returns (string)',
-  'function getCandidateCount(uint256) view returns (uint256)'
-];
+import { contractABI, contractAddress } from '~/config';
 
 export default defineEventHandler(async () => {
   const config = useRuntimeConfig();

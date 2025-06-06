@@ -1,5 +1,6 @@
 // composables/useEthereum.ts
 import { ethers } from 'ethers';
+import { contractAddress } from '~/config';
 import { Abi__factory } from '~/types';
 
 const address = ref<string>('');

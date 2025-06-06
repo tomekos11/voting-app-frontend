@@ -7,5 +7,5 @@
 </template>
 
 <script setup lang="ts">
-useEthereum();
+useEthereumStore();
 </script>

@@ -82,7 +82,7 @@
 import { ethers } from 'ethers';
 import type { PropositionOffChain } from '~/types/types';
 
-const { getContract } = useEthereum();
+const ethereumStore = useEthereumStore();
 
 const form = ref({});
 
@@ -121,7 +121,7 @@ const onSubmit = async () => {
 
   // Wywołanie smart kontraktu - przykład z użyciem Ethers.js
   // const contract = new ethers.Contract(/* ... */);
-  const contract = getContract();
+  const contract = ethereumStore.getContract();
   
   console.log(contract);
   

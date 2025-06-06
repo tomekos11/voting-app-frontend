@@ -16,21 +16,21 @@
 
       <nav-link to="/your-votes" label="Twoje głosy" />
 
-      <nav-link v-if="role === 'admin' || role === 'chairman'" to="/create-voting" label="Stwórz głosowanie" />
+      <nav-link v-if="votingStore.role === 'admin' || votingStore.role === 'chairman'" to="/create-voting" label="Stwórz głosowanie" />
     </div>
 
     <div class="ml-10">
-      <template v-if="isClient && walletConnected !== null && initialized">
+      <template v-if="isClient && ethereumStore.walletConnected !== null && votingStore.initialized">
         <UButton
-          v-if="!address"
+          v-if="!ethereumStore.address"
           label="Połącz z MetaMask"
-          @click="connect"
+          @click="ethereumStore.connect"
         />
         <div v-else class="text-sm text-center">
           <div>
-            {{ shortAddress }}
+            {{ ethereumStore.shortAddress }}
           </div>
-          <div class="text-cyan-400">{{ role }}</div>
+          <div class="text-cyan-400">{{ votingStore.role }}</div>
         </div>
       </template>
       
@@ -39,8 +39,9 @@
 </template>
 
 <script setup lang="ts">
-const { address, shortAddress, walletConnected, connect } = useEthereum();
-const { role, initialized, } = useVoting();
+const ethereumStore = useEthereumStore();
+const votingStore = useVotingStore();
+
 
 const isClient = computed(() => import.meta.client);
 
