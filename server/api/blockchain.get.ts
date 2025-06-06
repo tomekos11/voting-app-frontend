@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
+import { contractAddress } from '~/composables/test';
 
-const contractAddress = '0xa00998b1c48affdebb1d1c6499857a1f262a4e66';
 const contractABI = [
   'function votingCount() view returns (uint256)',
   'function getVotingStatus(uint256) view returns (string)',

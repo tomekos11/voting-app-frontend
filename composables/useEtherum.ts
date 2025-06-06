@@ -2,8 +2,6 @@
 import { ethers } from 'ethers';
 import { Abi__factory } from '~/types';
 
-const contractAddress = '0xa00998b1c48affdebb1d1c6499857a1f262a4e66';
-
 const address = ref<string>('');
 const isInitialized = ref(false);
 const walletConnected = ref(false);

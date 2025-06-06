@@ -1,7 +1,7 @@
 <template>
   <nav class="px-4 py-2 border-b border-gray-200 flex justify-between items-center bg-slate-950">
     <UButton
-      to="/about"
+      to="/"
       class="nav-btn"
       :color="$route.fullPath === '/' ? 'neutral' :'success'"
       variant="ghost"
@@ -9,27 +9,14 @@
     />
       
     <div class="flex gap-4 ml-auto">
-      <UButton
-        to="/about"
-        class="nav-btn"
-        :color="$route.fullPath === '/about' ? 'success' :'neutral'"
-        variant="link"
-        label="O aplikacji"
-      />
-      <UButton
-        to="/votings"
-        class="nav-btn"
-        :color="$route.fullPath === '/votings' ? 'success' :'neutral'"
-        variant="link"
-        label="Głosowania"
-      />
-      <UButton
-        to="/your-votes"
-        class="nav-btn"
-        :color="$route.fullPath === '/your-votes' ? 'success' :'neutral'"
-        variant="link"
-        label="Twoje głosy"
-      />
+
+      <nav-link to="/about" label="O aplikacji" />
+      
+      <nav-link to="/votings" label="Głosowania" />
+
+      <nav-link to="/your-votes" label="Twoje głosy" />
+
+      <nav-link v-if="role === 'admin' || role === 'chairman'" to="/create-voting" label="Stwórz głosowanie" />
     </div>
 
     <div class="ml-10">

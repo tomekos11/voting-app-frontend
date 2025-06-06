@@ -24,11 +24,26 @@ import type {
 } from "./common";
 
 export declare namespace VotingSystem {
-  export type CandidateStruct = { name: BytesLike; metadataCID: string };
+  export type VotingInfoStruct = {
+    id: BigNumberish;
+    title: string;
+    startTime: BigNumberish;
+    endTime: BigNumberish;
+    propositions: BytesLike[];
+  };
 
-  export type CandidateStructOutput = [name: string, metadataCID: string] & {
-    name: string;
-    metadataCID: string;
+  export type VotingInfoStructOutput = [
+    id: bigint,
+    title: string,
+    startTime: bigint,
+    endTime: bigint,
+    propositions: string[]
+  ] & {
+    id: bigint;
+    title: string;
+    startTime: bigint;
+    endTime: bigint;
+    propositions: string[];
   };
 }
 
@@ -36,23 +51,53 @@ export interface AbiInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "addAdmin"
+      | "addAdmin(address)"
       | "addVoter"
+      | "addVoter(address)"
       | "createVoting"
-      | "getCandidateCount"
+      | "createVoting(string,uint256,uint256,uint8,bytes32[])"
       | "getVotingStatus"
+      | "getVotingStatus(uint256)"
+      | "getPropositions"
+      | "getPropositions(uint256)"
+      | "getVotingBatch"
+      | "getVotingBatch(uint256[])"
+      | "getActiveVotings"
+      | "getActiveVotings(uint256,uint256)"
+      | "getIncomingVotings"
+      | "getIncomingVotings(uint256,uint256)"
+      | "getCompletedVotings"
+      | "getCompletedVotings(uint256,uint256)"
       | "removeAdmin"
+      | "removeAdmin(address)"
       | "removeVoter"
+      | "removeVoter(address)"
       | "vote"
+      | "vote(uint256,uint256)"
       | "admins"
+      | "admins(address)"
       | "chairman"
+      | "chairman()"
       | "voters"
+      | "voters(address)"
       | "votingCount"
+      | "votingCount()"
   ): FunctionFragment;
 
-  getEvent(nameOrSignatureOrTopic: "VoteCast" | "VotingCreated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "VotingCreated"
+      | "VotingCreated(uint256,string,uint8)"
+      | "VoteCast"
+      | "VoteCast(address,uint256,uint256)"
+  ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "addAdmin",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "addAdmin(address)",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
@@ -60,51 +105,129 @@ export interface AbiInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "createVoting",
-    values: [
-      string,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      VotingSystem.CandidateStruct[]
-    ]
+    functionFragment: "addVoter(address)",
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "getCandidateCount",
-    values: [BigNumberish]
+    functionFragment: "createVoting",
+    values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "createVoting(string,uint256,uint256,uint8,bytes32[])",
+    values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
   ): string;
   encodeFunctionData(
     functionFragment: "getVotingStatus",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getVotingStatus(uint256)",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPropositions",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPropositions(uint256)",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotingBatch",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotingBatch(uint256[])",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getActiveVotings",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getActiveVotings(uint256,uint256)",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getIncomingVotings",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getIncomingVotings(uint256,uint256)",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCompletedVotings",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCompletedVotings(uint256,uint256)",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "removeAdmin",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "removeAdmin(address)",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "removeVoter",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeVoter(address)",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "vote",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "vote(uint256,uint256)",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "admins", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "admins(address)",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(functionFragment: "chairman", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "chairman()",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "voters", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "voters(address)",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "votingCount",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "votingCount()",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(functionFragment: "addAdmin", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "addAdmin(address)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "addVoter", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "addVoter(address)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createVoting",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getCandidateCount",
+    functionFragment: "createVoting(string,uint256,uint256,uint8,bytes32[])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -112,43 +235,90 @@ export interface AbiInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getVotingStatus(uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPropositions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPropositions(uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotingBatch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotingBatch(uint256[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getActiveVotings",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getActiveVotings(uint256,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getIncomingVotings",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getIncomingVotings(uint256,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCompletedVotings",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCompletedVotings(uint256,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "removeAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeAdmin(address)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "removeVoter",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeVoter(address)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "vote", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "vote(uint256,uint256)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "admins", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "admins(address)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "chairman", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "chairman()", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "voters", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "voters(address)",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "votingCount",
     data: BytesLike
   ): Result;
-}
-
-export namespace VoteCastEvent {
-  export type InputTuple = [
-    voter: AddressLike,
-    votingId: BigNumberish,
-    candidateIndex: BigNumberish
-  ];
-  export type OutputTuple = [
-    voter: string,
-    votingId: bigint,
-    candidateIndex: bigint
-  ];
-  export interface OutputObject {
-    voter: string;
-    votingId: bigint;
-    candidateIndex: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+  decodeFunctionResult(
+    functionFragment: "votingCount()",
+    data: BytesLike
+  ): Result;
 }
 
 export namespace VotingCreatedEvent {
@@ -166,6 +336,28 @@ export namespace VotingCreatedEvent {
     votingId: bigint;
     title: string;
     votingType: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace VoteCastEvent {
+  export type InputTuple = [
+    voter: AddressLike,
+    votingId: BigNumberish,
+    propositionIndex: BigNumberish
+  ];
+  export type OutputTuple = [
+    voter: string,
+    votingId: bigint,
+    propositionIndex: bigint
+  ];
+  export interface OutputObject {
+    voter: string;
+    votingId: bigint;
+    propositionIndex: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -218,7 +410,19 @@ export interface Abi extends BaseContract {
 
   addAdmin: TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
 
+  "addAdmin(address)": TypedContractMethod<
+    [_admin: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   addVoter: TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
+
+  "addVoter(address)": TypedContractMethod<
+    [_voter: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
   createVoting: TypedContractMethod<
     [
@@ -226,16 +430,22 @@ export interface Abi extends BaseContract {
       _startTime: BigNumberish,
       _endTime: BigNumberish,
       _votingType: BigNumberish,
-      _candidates: VotingSystem.CandidateStruct[]
+      _propositions: BytesLike[]
     ],
     [void],
     "nonpayable"
   >;
 
-  getCandidateCount: TypedContractMethod<
-    [_votingId: BigNumberish],
-    [bigint],
-    "view"
+  "createVoting(string,uint256,uint256,uint8,bytes32[])": TypedContractMethod<
+    [
+      _title: string,
+      _startTime: BigNumberish,
+      _endTime: BigNumberish,
+      _votingType: BigNumberish,
+      _propositions: BytesLike[]
+    ],
+    [void],
+    "nonpayable"
   >;
 
   getVotingStatus: TypedContractMethod<
@@ -244,23 +454,153 @@ export interface Abi extends BaseContract {
     "view"
   >;
 
+  "getVotingStatus(uint256)": TypedContractMethod<
+    [_votingId: BigNumberish],
+    [string],
+    "view"
+  >;
+
+  getPropositions: TypedContractMethod<
+    [votingId: BigNumberish],
+    [string[]],
+    "view"
+  >;
+
+  "getPropositions(uint256)": TypedContractMethod<
+    [votingId: BigNumberish],
+    [string[]],
+    "view"
+  >;
+
+  getVotingBatch: TypedContractMethod<
+    [ids: BigNumberish[]],
+    [[string[], string[][]] & { titles: string[]; cids: string[][] }],
+    "view"
+  >;
+
+  "getVotingBatch(uint256[])": TypedContractMethod<
+    [ids: BigNumberish[]],
+    [[string[], string[][]] & { titles: string[]; cids: string[][] }],
+    "view"
+  >;
+
+  getActiveVotings: TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalActive: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  "getActiveVotings(uint256,uint256)": TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalActive: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  getIncomingVotings: TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalIncoming: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  "getIncomingVotings(uint256,uint256)": TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalIncoming: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  getCompletedVotings: TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalCompleted: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  "getCompletedVotings(uint256,uint256)": TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalCompleted: bigint;
+      }
+    ],
+    "view"
+  >;
+
   removeAdmin: TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
+
+  "removeAdmin(address)": TypedContractMethod<
+    [_admin: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
   removeVoter: TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
 
+  "removeVoter(address)": TypedContractMethod<
+    [_voter: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   vote: TypedContractMethod<
-    [_votingId: BigNumberish, _candidateIndex: BigNumberish],
+    [_votingId: BigNumberish, _propositionIndex: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  "vote(uint256,uint256)": TypedContractMethod<
+    [_votingId: BigNumberish, _propositionIndex: BigNumberish],
     [void],
     "nonpayable"
   >;
 
   admins: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
 
+  "admins(address)": TypedContractMethod<
+    [arg0: AddressLike],
+    [boolean],
+    "view"
+  >;
+
   chairman: TypedContractMethod<[], [string], "view">;
+
+  "chairman()": TypedContractMethod<[], [string], "view">;
 
   voters: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
 
+  "voters(address)": TypedContractMethod<
+    [arg0: AddressLike],
+    [boolean],
+    "view"
+  >;
+
   votingCount: TypedContractMethod<[], [bigint], "view">;
+
+  "votingCount()": TypedContractMethod<[], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -270,7 +610,13 @@ export interface Abi extends BaseContract {
     nameOrSignature: "addAdmin"
   ): TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "addAdmin(address)"
+  ): TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "addVoter"
+  ): TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "addVoter(address)"
   ): TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "createVoting"
@@ -280,27 +626,145 @@ export interface Abi extends BaseContract {
       _startTime: BigNumberish,
       _endTime: BigNumberish,
       _votingType: BigNumberish,
-      _candidates: VotingSystem.CandidateStruct[]
+      _propositions: BytesLike[]
     ],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "getCandidateCount"
-  ): TypedContractMethod<[_votingId: BigNumberish], [bigint], "view">;
+    nameOrSignature: "createVoting(string,uint256,uint256,uint8,bytes32[])"
+  ): TypedContractMethod<
+    [
+      _title: string,
+      _startTime: BigNumberish,
+      _endTime: BigNumberish,
+      _votingType: BigNumberish,
+      _propositions: BytesLike[]
+    ],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "getVotingStatus"
   ): TypedContractMethod<[_votingId: BigNumberish], [string], "view">;
   getFunction(
+    nameOrSignature: "getVotingStatus(uint256)"
+  ): TypedContractMethod<[_votingId: BigNumberish], [string], "view">;
+  getFunction(
+    nameOrSignature: "getPropositions"
+  ): TypedContractMethod<[votingId: BigNumberish], [string[]], "view">;
+  getFunction(
+    nameOrSignature: "getPropositions(uint256)"
+  ): TypedContractMethod<[votingId: BigNumberish], [string[]], "view">;
+  getFunction(
+    nameOrSignature: "getVotingBatch"
+  ): TypedContractMethod<
+    [ids: BigNumberish[]],
+    [[string[], string[][]] & { titles: string[]; cids: string[][] }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getVotingBatch(uint256[])"
+  ): TypedContractMethod<
+    [ids: BigNumberish[]],
+    [[string[], string[][]] & { titles: string[]; cids: string[][] }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getActiveVotings"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalActive: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getActiveVotings(uint256,uint256)"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalActive: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getIncomingVotings"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalIncoming: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getIncomingVotings(uint256,uint256)"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalIncoming: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getCompletedVotings"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalCompleted: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getCompletedVotings(uint256,uint256)"
+  ): TypedContractMethod<
+    [page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoStructOutput[], bigint] & {
+        votingsInfo: VotingSystem.VotingInfoStructOutput[];
+        totalCompleted: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "removeAdmin"
+  ): TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "removeAdmin(address)"
   ): TypedContractMethod<[_admin: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "removeVoter"
   ): TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "removeVoter(address)"
+  ): TypedContractMethod<[_voter: AddressLike], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "vote"
   ): TypedContractMethod<
-    [_votingId: BigNumberish, _candidateIndex: BigNumberish],
+    [_votingId: BigNumberish, _propositionIndex: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "vote(uint256,uint256)"
+  ): TypedContractMethod<
+    [_votingId: BigNumberish, _propositionIndex: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -308,15 +772,41 @@ export interface Abi extends BaseContract {
     nameOrSignature: "admins"
   ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
   getFunction(
+    nameOrSignature: "admins(address)"
+  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+  getFunction(
     nameOrSignature: "chairman"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "chairman()"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "voters"
   ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
   getFunction(
+    nameOrSignature: "voters(address)"
+  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+  getFunction(
     nameOrSignature: "votingCount"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "votingCount()"
+  ): TypedContractMethod<[], [bigint], "view">;
 
+  getEvent(
+    key: "VotingCreated"
+  ): TypedContractEvent<
+    VotingCreatedEvent.InputTuple,
+    VotingCreatedEvent.OutputTuple,
+    VotingCreatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "VotingCreated(uint256,string,uint8)"
+  ): TypedContractEvent<
+    VotingCreated_uint256_string_uint8_Event.InputTuple,
+    VotingCreated_uint256_string_uint8_Event.OutputTuple,
+    VotingCreated_uint256_string_uint8_Event.OutputObject
+  >;
   getEvent(
     key: "VoteCast"
   ): TypedContractEvent<
@@ -325,25 +815,14 @@ export interface Abi extends BaseContract {
     VoteCastEvent.OutputObject
   >;
   getEvent(
-    key: "VotingCreated"
+    key: "VoteCast(address,uint256,uint256)"
   ): TypedContractEvent<
-    VotingCreatedEvent.InputTuple,
-    VotingCreatedEvent.OutputTuple,
-    VotingCreatedEvent.OutputObject
+    VoteCast_address_uint256_uint256_Event.InputTuple,
+    VoteCast_address_uint256_uint256_Event.OutputTuple,
+    VoteCast_address_uint256_uint256_Event.OutputObject
   >;
 
   filters: {
-    "VoteCast(address,uint256,uint256)": TypedContractEvent<
-      VoteCastEvent.InputTuple,
-      VoteCastEvent.OutputTuple,
-      VoteCastEvent.OutputObject
-    >;
-    VoteCast: TypedContractEvent<
-      VoteCastEvent.InputTuple,
-      VoteCastEvent.OutputTuple,
-      VoteCastEvent.OutputObject
-    >;
-
     "VotingCreated(uint256,string,uint8)": TypedContractEvent<
       VotingCreatedEvent.InputTuple,
       VotingCreatedEvent.OutputTuple,
@@ -353,6 +832,17 @@ export interface Abi extends BaseContract {
       VotingCreatedEvent.InputTuple,
       VotingCreatedEvent.OutputTuple,
       VotingCreatedEvent.OutputObject
+    >;
+
+    "VoteCast(address,uint256,uint256)": TypedContractEvent<
+      VoteCastEvent.InputTuple,
+      VoteCastEvent.OutputTuple,
+      VoteCastEvent.OutputObject
+    >;
+    VoteCast: TypedContractEvent<
+      VoteCastEvent.InputTuple,
+      VoteCastEvent.OutputTuple,
+      VoteCastEvent.OutputObject
     >;
   };
 }

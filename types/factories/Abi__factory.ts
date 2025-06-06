@@ -16,6 +16,31 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "uint256",
+        name: "votingId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "title",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "votingType",
+        type: "uint8",
+      },
+    ],
+    name: "VotingCreated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "address",
         name: "voter",
         type: "address",
@@ -29,36 +54,11 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "candidateIndex",
+        name: "propositionIndex",
         type: "uint256",
       },
     ],
     name: "VoteCast",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "votingId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "title",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "enum VotingSystem.VotingType",
-        name: "votingType",
-        type: "uint8",
-      },
-    ],
-    name: "VotingCreated",
     type: "event",
   },
   {
@@ -105,50 +105,19 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "enum VotingSystem.VotingType",
+        internalType: "uint8",
         name: "_votingType",
         type: "uint8",
       },
       {
-        components: [
-          {
-            internalType: "bytes32",
-            name: "name",
-            type: "bytes32",
-          },
-          {
-            internalType: "string",
-            name: "metadataCID",
-            type: "string",
-          },
-        ],
-        internalType: "struct VotingSystem.Candidate[]",
-        name: "_candidates",
-        type: "tuple[]",
+        internalType: "bytes32[]",
+        name: "_propositions",
+        type: "bytes32[]",
       },
     ],
     name: "createVoting",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_votingId",
-        type: "uint256",
-      },
-    ],
-    name: "getCandidateCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -165,6 +134,217 @@ const _abi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "votingId",
+        type: "uint256",
+      },
+    ],
+    name: "getPropositions",
+    outputs: [
+      {
+        internalType: "bytes32[]",
+        name: "",
+        type: "bytes32[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "ids",
+        type: "uint256[]",
+      },
+    ],
+    name: "getVotingBatch",
+    outputs: [
+      {
+        internalType: "string[]",
+        name: "titles",
+        type: "string[]",
+      },
+      {
+        internalType: "bytes32[][]",
+        name: "cids",
+        type: "bytes32[][]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "page",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "perPage",
+        type: "uint256",
+      },
+    ],
+    name: "getActiveVotings",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "title",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "propositions",
+            type: "bytes32[]",
+          },
+        ],
+        internalType: "struct VotingSystem.VotingInfo[]",
+        name: "votingsInfo",
+        type: "tuple[]",
+      },
+      {
+        internalType: "uint256",
+        name: "totalActive",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "page",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "perPage",
+        type: "uint256",
+      },
+    ],
+    name: "getIncomingVotings",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "title",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "propositions",
+            type: "bytes32[]",
+          },
+        ],
+        internalType: "struct VotingSystem.VotingInfo[]",
+        name: "votingsInfo",
+        type: "tuple[]",
+      },
+      {
+        internalType: "uint256",
+        name: "totalIncoming",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "page",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "perPage",
+        type: "uint256",
+      },
+    ],
+    name: "getCompletedVotings",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "title",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "startTime",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "endTime",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "propositions",
+            type: "bytes32[]",
+          },
+        ],
+        internalType: "struct VotingSystem.VotingInfo[]",
+        name: "votingsInfo",
+        type: "tuple[]",
+      },
+      {
+        internalType: "uint256",
+        name: "totalCompleted",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -205,7 +385,7 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "_candidateIndex",
+        name: "_propositionIndex",
         type: "uint256",
       },
     ],

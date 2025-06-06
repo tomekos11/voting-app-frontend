@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     // checker: true,
   },
 
+  // '\'nonce-{{nonce}}\''
   security: {
     // rateLimiter: false,
     nonce: true,
@@ -21,8 +22,8 @@ export default defineNuxtConfig({
       contentSecurityPolicy: {
         'default-src': ['\'self\''],
         'connect-src': ['\'self\'', 'https://sepolia.infura.io', import.meta.env.NUXT_PUBLIC_API_URL, import.meta.env.NUXT_PUBLIC_API_URL_HTTPS],
-        'script-src': ['\'self\'', '\'nonce-{{nonce}}\'', '\'strict-dynamic\''],
-        'style-src': ['\'self\'', '\'nonce-{{nonce}}\''],
+        'script-src': ['\'self\'', '\'unsafe-inline\''],
+        'style-src': ['\'self\'', '\'unsafe-inline\''],
         'img-src': ['\'self\'', 'data:', 'blob:', import.meta.env.NUXT_PUBLIC_API_URL, import.meta.env.NUXT_PUBLIC_API_URL_HTTPS],
         'font-src': ['\'self\''],
         'object-src': ['\'none\''],

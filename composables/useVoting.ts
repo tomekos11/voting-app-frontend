@@ -1,5 +1,6 @@
 import { whenever } from '@vueuse/core';
 import type { Abi } from '~/types';
+import type { Voting } from '~/types/types';
 
 const initialized = ref(false);
 const contract = shallowRef<Abi>();
@@ -68,6 +69,104 @@ export const useVoting = () => {
     initialized.value = true;
   };
 
+
+  const incomingVotings = ref<Voting[]>([]);
+  const activeVotings = ref<Voting[]>([]);
+  const completedVotings = ref<Voting[]>([]);
+
+  const fetchIncomingVotings = async (page: number, perPage: number) => {
+    try {
+      if (!contract.value) {
+        console.error('Kontrakt nie został zainicjalizowany');
+        return;
+      }
+
+      const [votings, total] = await contract.value.getIncomingVotings(page, perPage);
+    
+      incomingVotings.value = votings.map(voting => ({
+        id: Number(voting.id),
+        title: voting.title,
+        startTime: Number(voting.startTime),
+        endTime: Number(voting.endTime)
+      }));
+
+      console.log(votings);
+
+      return {
+        data: incomingVotings.value,
+        total: Number(total)
+      };
+    } catch (error) {
+      console.error('Błąd pobierania głosowań:', error);
+      if (error instanceof Error && error.message.includes('user rejected transaction')) {
+        throw new Error('Anulowano przez użytkownika');
+      }
+      throw error;
+    }
+  };
+
+  const fetchActiveVotings = async (page: number, perPage: number) => {
+    try {
+      if (!contract.value) {
+        console.error('Kontrakt nie został zainicjalizowany');
+        return;
+      }
+
+      const [votings, total] = await contract.value.getActiveVotings(page, perPage);
+    
+      activeVotings.value = votings.map(voting => ({
+        id: Number(voting.id),
+        title: voting.title,
+        startTime: Number(voting.startTime),
+        endTime: Number(voting.endTime)
+      }));
+
+      console.log(votings);
+
+      return {
+        data: activeVotings.value,
+        total: Number(total)
+      };
+    } catch (error) {
+      console.error('Błąd pobierania głosowań:', error);
+      if (error instanceof Error && error.message.includes('user rejected transaction')) {
+        throw new Error('Anulowano przez użytkownika');
+      }
+      throw error;
+    }
+  };
+
+  const fetchCompletedVotings = async (page: number, perPage: number) => {
+    try {
+      if (!contract.value) {
+        console.error('Kontrakt nie został zainicjalizowany');
+        return;
+      }
+
+      const [votings, total] = await contract.value.getCompletedVotings(page, perPage);
+    
+      completedVotings.value = votings.map(voting => ({
+        id: Number(voting.id),
+        title: voting.title,
+        startTime: Number(voting.startTime),
+        endTime: Number(voting.endTime)
+      }));
+
+      console.log(votings);
+
+      return {
+        data: completedVotings.value,
+        total: Number(total)
+      };
+    } catch (error) {
+      console.error('Błąd pobierania głosowań:', error);
+      if (error instanceof Error && error.message.includes('user rejected transaction')) {
+        throw new Error('Anulowano przez użytkownika');
+      }
+      throw error;
+    }
+  };
+
   onMounted(initialize);
 
   whenever(address, async () => {
@@ -78,9 +177,19 @@ export const useVoting = () => {
   return {
     role: readonly(role),
     votingsCount: readonly(votingsCount),
+
+    incomingVotings: readonly(incomingVotings),
+    activeVotings: readonly(incomingVotings),
+    completedVotings: readonly(incomingVotings),
+
     initialized: readonly(initialized),
     checkRole,
     getVotingsCount,
+
+    fetchIncomingVotings,
+    fetchActiveVotings,
+    fetchCompletedVotings,
+
     initialize
   };
 };

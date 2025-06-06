@@ -28,7 +28,7 @@
           </div>
         </div>
   
-        <UDivider label="Funkcjonalności" />
+        <USeparator label="Funkcjonalności" />
   
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UCard>
@@ -77,7 +77,7 @@
           </UCard>
         </div>
   
-        <UDivider label="Technologie" />
+        <USeparator label="Technologie" />
   
         <div class="flex flex-wrap gap-4 justify-center">
           <UBadge color="primary" variant="solid">Nuxt 3</UBadge>
