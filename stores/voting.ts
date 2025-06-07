@@ -124,6 +124,27 @@ export const useVotingStore = defineStore('voting', () => {
   };
 
 
+  const grantPermissionToVote = async (addres: string) => {
+    if (!contract.value) {
+      throw new Error('Kontrakt nie został zainicjalizowany');
+    }
+
+    if (!ethereumStore.address) {
+      throw new Error('Nie połączono z portfelem');
+    }
+
+    try {
+      const res = await contract.value.addVoter(addres);
+
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
+
+  };
+
+
   const initialize = async () => {
     if (initialized.value && ethereumStore.contract) return;
 
@@ -139,8 +160,15 @@ export const useVotingStore = defineStore('voting', () => {
   };
 
 
-  whenever(() => ethereumStore.contract, () => {
-    initialize();
+  // whenever(() => ethereumStore.contract, () => {
+  //   initialize();
+  // });
+
+  watch(() => ethereumStore.connection, (nv) => {
+    if(nv === 'established') {
+      console.log('init voting');
+      initialize();
+    }
   });
 
   return {
@@ -157,6 +185,9 @@ export const useVotingStore = defineStore('voting', () => {
     // Actions
     checkRole,
     fetchVotings,
+
+    grantPermissionToVote,
+    
     vote,
     initialize,
   };

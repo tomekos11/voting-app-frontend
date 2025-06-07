@@ -6,11 +6,11 @@
       Brak stworzonych głosowań.
     </section>
 
-    <section v-if="activeVotings.length">
+    <section v-if="activeVotings && activeVotings.data.length">
       <h2 class="text-2xl font-bold mb-4">Aktywne głosowania</h2>
       <UCarousel 
         v-slot="{ item }" 
-        :items="activeVotings"
+        :items="activeVotings.data"
         :ui="{ item: 'basis-full md:basis-1/2 lg:basis-1/3' }"
         arrows
         class="px-4"
@@ -63,7 +63,7 @@
 
             <UButton 
               block
-              label="Zagłosuj"
+              label="Przejdź do głosowania"
               @click="navigateTo(`/votings/${item.id}`)"
             />
           </div>
@@ -71,12 +71,11 @@
       </UCarousel>
     </section>
 
-    <!-- Nadchodzące głosowania -->
-    <section v-if="incomingVotings.length">
+    <section v-if="incomingVotings && incomingVotings.data.length">
       <h2 class="text-2xl font-bold mb-4">Nadchodzące głosowania</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <UCard 
-          v-for="voting in incomingVotings"
+          v-for="voting in incomingVotings.data"
           :key="voting.id"
           class="opacity-75 hover:opacity-100 transition-opacity bg-gray-50"
         >
@@ -112,7 +111,8 @@ import { DateTime } from 'luxon';
 // import { useInterval } from '@vueuse/core';
 import type { Voting } from '~/types/types';
 
-const votingStore = useVotingStore();
+// const votingStore = useVotingStore();
+const ethereumStore = useEthereumStore();
 const now = ref(DateTime.now());
 
 // Automatyczna aktualizacja czasu co sekundę
@@ -120,12 +120,12 @@ const now = ref(DateTime.now());
 //   now.value = DateTime.now();
 // });
 
-const activeVotings = computed(() => votingStore.votings.active);
-const incomingVotings = computed(() => votingStore.votings.incoming);
-const completedVotings = computed(() => votingStore.votings.completed);
+// const activeVotings = computed(() => votingStore.votings.active);
+// const incomingVotings = computed(() => votingStore.votings.incoming);
+// const completedVotings = computed(() => votingStore.votings.completed);
 
-const noData = computed(() => !activeVotings.value.length && !incomingVotings.value.length && !completedVotings.value.length);
-
+// const noData = computed(() => !activeVotings.value.length && !incomingVotings.value.length && !completedVotings.value.length);
+const noData = computed(() => !activeVotings.value && !incomingVotings.value);
 const formatDate = (timestamp: number) => {
   return DateTime.fromSeconds(timestamp).toFormat('dd.MM.yyyy HH:mm');
 };
@@ -175,11 +175,20 @@ const timeToStart = (startTime: number) => {
   ].filter(Boolean).join(' ');
 };
 
-// Inicjalizacja danych
-watch(() => votingStore.contract, async () => {
-  await Promise.all([
-    votingStore.fetchVotings('active', 0, 10),
-    votingStore.fetchVotings('incoming', 0, 10)
-  ]);
+
+const {
+  data: activeVotings,
+  pending: activePending,
+  refresh: refreshActive
+} = useFetch('/api/votings/active', {
+  query: { page: 0, perPage: 10 },
+});
+
+const {
+  data: incomingVotings,
+  pending: incomingPending,
+  refresh: refreshIncoming
+} = useFetch('/api/votings/incoming', {
+  query: { page: 0, perPage: 10 },
 });
 </script>

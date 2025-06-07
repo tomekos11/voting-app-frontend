@@ -101,8 +101,9 @@
 </template>
   
 <script setup lang="ts">
+import { contractAddress } from '~/config';
+
 // Tutaj możesz dodać logikę jeśli potrzebujesz
 
-import { contractAddress } from '~/composables/test';
 </script>
   

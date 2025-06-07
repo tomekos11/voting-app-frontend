@@ -17,22 +17,24 @@
       <nav-link to="/your-votes" label="Twoje głosy" />
 
       <nav-link v-if="votingStore.role === 'admin' || votingStore.role === 'chairman'" to="/create-voting" label="Stwórz głosowanie" />
+
+      <nav-link v-if="votingStore.role === 'admin' || votingStore.role === 'chairman'" to="/adjust-permissions" label="Kontroluj Permisje" />
     </div>
 
     <div class="ml-10">
-      <template v-if="isClient && ethereumStore.walletConnected !== null && votingStore.initialized">
+      <template v-if="ethereumStore.connection === 'needs_provider_login'">
         <UButton
           v-if="!ethereumStore.address"
           label="Połącz z MetaMask"
           @click="ethereumStore.connect"
         />
-        <div v-else class="text-sm text-center">
-          <div>
-            {{ ethereumStore.shortAddress }}
-          </div>
-          <div class="text-cyan-400">{{ votingStore.role }}</div>
-        </div>
       </template>
+      <div v-else-if="ethereumStore.connection === 'established'" class="text-sm text-center">
+        <div>
+          {{ ethereumStore.shortAddress }}
+        </div>
+        <div class="text-cyan-400">{{ votingStore.role }}</div>
+      </div>
       
     </div>
   </nav>

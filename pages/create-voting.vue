@@ -118,18 +118,17 @@ const onSubmit = async () => {
 
   console.log(preparedData.startTime);
   console.log(preparedData.endTime);
-
-  // Wywołanie smart kontraktu - przykład z użyciem Ethers.js
-  // const contract = new ethers.Contract(/* ... */);
-  const contract = ethereumStore.getContract();
   
-  console.log(contract);
+  if(!ethereumStore.contract) {
+    console.warn('problem z kontraktem');
+    return;
+  }
   
   try {
     validateVotingParams(preparedData);
 
     try {
-      await contract.createVoting(
+      await ethereumStore.contract.createVoting(
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,

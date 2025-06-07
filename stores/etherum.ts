@@ -10,25 +10,17 @@ export const useEthereumStore = defineStore('ethereum', () => {
   const address = ref<string>('');
   const balance = ref<string>('');
   const isInitialized = ref(false);
-  const walletConnected = ref(false);
   const provider = shallowRef<ethers.BrowserProvider | null>(null);
   const signer = shallowRef<ethers.Signer | null>(null);
 
   const contract = ref<Abi | null>(null);
 
+  const connection = ref<'not_established' | 'no_provider' | 'needs_provider_login' | 'established'>('not_established');
+
   // Getters
   const shortAddress = computed(() =>
     address.value ? `${address.value.slice(0, 6)}...${address.value.slice(-4)}` : ''
   );
-
-  // Actions
-  const initializeProvider = () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      provider.value = new ethers.BrowserProvider(window.ethereum);
-      return true;
-    }
-    return false;
-  };
 
   const updateBalance = async () => {
     if (provider.value && address.value) {
@@ -37,30 +29,38 @@ export const useEthereumStore = defineStore('ethereum', () => {
     }
   };
 
-  const connect = async () => {
-    try {
-      if (!initializeProvider()) {
-        throw new Error('MetaMask nie jest dostępny');
-      }
+  // funkcja służy do nawiązania połączenia z portfelem poprzez najczęściej kliknięcie guzika -> nie jest używana w auto-połączeniu.
+  // const connect = async () => {
+  //   try {
+  //     if (!initializeProvider()) {
+  //       connection.value = 'no_provider';
+  //       console.warn('Metamask nie jest dostępny');
+  //       return;
+  //     }
 
-      console.log(1);
-      const accounts = await window.ethereum!.request({
-        method: 'eth_requestAccounts'
-      });
+  //     const accounts = await window.ethereum!.request({
+  //       method: 'eth_requestAccounts'
+  //     });
 
-      if (!accounts.length) return;
+  //     if (!accounts.length) {
+  //       connection.value = 'needs_provider_login';
+  //       console.warn('Musisz kliknąć na portfel i potwierdzić swoje dane');
+  //       return;
+  //     }
       
-      address.value = accounts[0];
-      signer.value = await provider.value!.getSigner();
-      walletConnected.value = true;
-      await updateBalance();
+  //     address.value = accounts[0];
+  //     signer.value = await provider.value!.getSigner();
 
-    } catch (error) {
-      console.error('Błąd połączenia:', error);
-      walletConnected.value = false;
-      throw error;
-    }
-  };
+  //     connection.value = 'established';
+
+  //     await updateBalance();
+
+  //   } catch (error) {
+  //     console.error('Błąd połączenia:', error);
+  //     connection.value = 'not_established';
+  //     throw error;
+  //   }
+  // };
 
   const getContract = () => {
     const runner = signer.value || provider.value;
@@ -71,26 +71,87 @@ export const useEthereumStore = defineStore('ethereum', () => {
     return contract.value;
   };
 
-  // Auto-connect i śledzenie zmian
-  const init = async () => {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const accounts = await window.ethereum?.request({ method: 'eth_accounts' });
-      if (accounts?.length) {
-        address.value = accounts[0];
-        provider.value = new ethers.BrowserProvider(window.ethereum);
-        signer.value = await provider.value.getSigner();
 
-        getContract();
-        await updateBalance();
-        walletConnected.value = true;
+  const handleConnection = async (requestLogin = false) => {
+    if (typeof window === 'undefined') return;
+
+    try {
+    // Inicjalizacja providera (możesz zunifikować tę logikę)
+      if (!window.ethereum) {
+        connection.value = 'no_provider';
+        console.warn('@@@ MetaMask nie jest dostępny @@@');
+        return;
       }
+
+      // Wybór metody pobierania kont
+      const method = requestLogin ? 'eth_requestAccounts' : 'eth_accounts';
+      const accounts = await window.ethereum.request({ method });
+
+      if (!accounts || !accounts.length) {
+        connection.value = 'needs_provider_login';
+        console.warn('Musisz kliknąć na portfel i potwierdzić swoje dane');
+        return;
+      }
+
+      if (!provider.value) {
+        provider.value = new ethers.BrowserProvider(window.ethereum);
+      }
+
+      address.value = accounts[0];
+      signer.value = await provider.value.getSigner();
+
+      // Dodatkowa logika tylko przy inicjalizacji
+      if (!requestLogin) {
+        getContract();
+      }
+
+      await updateBalance();
+      connection.value = 'established';
+    } catch (error) {
+      console.error('Błąd połączenia:', error);
+      connection.value = 'not_established';
+      throw error;
     } finally {
       isInitialized.value = true;
-      console.log('after init');
+      console.log('after handleConnection');
     }
   };
+
+  // Auto-connect i śledzenie zmian
+  // const init = async () => {
+  //   if (typeof window === 'undefined') return;
+    
+  //   try {
+  //     const accounts = await window.ethereum?.request({ method: 'eth_accounts' });
+
+  //     // jesli accounts = undefined to nie ma wgl rozszerzenia metamask
+  //     // jesli accounts = [] to nie podal uzytkownik hasla
+      
+  //     if(accounts === undefined) {
+  //       connection.value = 'no_provider';
+  //       throw new Error('MetaMask nie jest dostępny');
+  //     }
+
+  //     if (!accounts.length) {
+  //       connection.value = 'needs_provider_login';
+  //       console.warn('Musisz kliknąć na portfel i potwierdzić swoje dane');
+  //       return;
+  //     }
+
+  //     if (accounts?.length) {
+  //       address.value = accounts[0];
+  //       provider.value = new ethers.BrowserProvider(window.ethereum);
+  //       signer.value = await provider.value.getSigner();
+
+  //       getContract();
+  //       await updateBalance();
+  //       connection.value = 'established';
+  //     }
+  //   } finally {
+  //     isInitialized.value = true;
+  //     console.log('after init');
+  //   }
+  // };
 
   // Reaktywne aktualizacje
   whenever(address, async () => {
@@ -101,8 +162,9 @@ export const useEthereumStore = defineStore('ethereum', () => {
   // Inicjalizacja
   if (typeof window !== 'undefined') {
     console.log(12);
-    init();
-    
+    // init();
+    handleConnection(false);
+
     window.ethereum?.on('accountsChanged', ([newAddress]: string[]) => {
       address.value = newAddress || '';
     });
@@ -112,12 +174,14 @@ export const useEthereumStore = defineStore('ethereum', () => {
     });
   }
 
+  const connect = () => handleConnection(true);
+
   return {
     // State
     address,
     balance,
     isInitialized,
-    walletConnected,
+    connection,
     provider,
     signer,
     contract,

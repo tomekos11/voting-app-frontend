@@ -12,8 +12,10 @@ export interface PropositionOffChain {
 export interface Voting {
   id: number;
   title: string;
-  startTime: number;
-  endTime: number;
+  startTime: number | string;
+  endTime: number | string;
   votingType: 0 | 1 | 'Public' | 'Private';
   propositions: string[];
 }
+
+export type VotingType = 'incoming' | 'active' | 'completed';

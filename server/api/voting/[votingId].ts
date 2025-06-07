@@ -1,52 +1,53 @@
-// server/api/voting/[id].ts
 import { ethers } from 'ethers';
 import { DateTime } from 'luxon';
-import { contractAddress } from '~/config';
-import { Abi__factory } from '~/types';
+import { getBlockchainComponents, initBlockchainConnection  } from '~/config';
+import type { Voting } from '~/types/types';
+
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const votingId = Number(getRouterParam(event, 'votingId'));
+  if (process.env.NODE_ENV === 'development') {
+    event.node.res.setHeader(
+      'Cache-Control',
+      'no-cache, no-store, must-revalidate'
+    );
+    event.node.res.setHeader('Pragma', 'no-cache');
+    event.node.res.setHeader('Expires', '0');
+  } else {
+    event.node.res.setHeader(
+      'Cache-Control',
+      'public, max-age=300, stale-while-revalidate=60'
+    );
+  }
 
-  // Walidacja konfiguracji
-  if (!config.INFURA_API_KEY) {
+  initBlockchainConnection();
+  const { contract } = getBlockchainComponents();
+  
+  const rawVotingId = getRouterParam(event, 'votingId');
+
+  if(!rawVotingId) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Brak klucza Infura w konfiguracji'
+      message: 'Brak wymaganego parametru votingId'
     });
   }
 
-  if (!contractAddress) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Brak adresu kontraktu w konfiguracji'
-    });
-  }
+  const votingId = ethers.getBigInt(rawVotingId);
 
   try {
-    // Inicjalizacja połączenia z blockchain
-    const provider = new ethers.JsonRpcProvider(
-      `https://sepolia.infura.io/v3/${config.INFURA_API_KEY}`,
-      'sepolia',
-      { staticNetwork: true }
-    );
+    console.log(votingId);
+    const voting =  await contract.getVoting(votingId);
 
-    const contract = Abi__factory.connect(contractAddress, provider);
-
-    // Pobieranie danych z blockchain
-    const voting = await contract.getVoting(votingId);
-
-    console.log(voting);
-    // Konwersja danych dla klienta
-    return {
+    const response: Voting = {
       id: Number(voting.id),
       title: voting.title,
       startTime: DateTime.fromSeconds(Number(voting.startTime)).toISO(),
       endTime: DateTime.fromSeconds(Number(voting.endTime)).toISO(),
       propositions: voting.propositions,
       votingType: voting.votingType === 0 ? 'Public' : 'Private',
-    //   status: await contract.getVotingStatus(votingId)
     };
+
+    console.log(voting);
+    return response;
 
   } catch (error) {
     // Specjalna obsługa błędów blockchain

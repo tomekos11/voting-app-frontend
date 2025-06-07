@@ -7,6 +7,7 @@ struct VotingInfo {
     uint256 startTime;
     uint256 endTime;
     bytes32[] propositions;
+    VotingType votingType;
 }
 
 enum VotingType { Public, Private }
@@ -144,17 +145,20 @@ contract VotingSystem {
         return "Completed";
     }
 
-    function getVoting(uint256 id) public view returns (
-        uint256,
-        string memory,
-        uint256,
-        uint256,
-        bytes32[] memory,
-        VotingType
-    ) {
+    function getVoting(uint256 id) public view returns (VotingInfo memory) {
         Voting storage v = votings[id];
         require(v.exists, "Voting does not exist");
-        return (v.id, v.title, v.startTime, v.endTime, v.propositions, v.votingType);
+
+        VotingInfo memory info = VotingInfo({
+            id: v.id,
+            title: v.title,
+            startTime: v.startTime,
+            endTime: v.endTime,
+            propositions: v.propositions,
+            votingType: v.votingType
+        });
+
+        return info;
     }
 
     function getPropositions(uint256 votingId) public view returns (bytes32[] memory) {
@@ -266,7 +270,8 @@ contract VotingSystem {
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
                 endTime: votings[votingId].endTime,
-                propositions: votings[votingId].propositions
+                propositions: votings[votingId].propositions,
+                votingType: votings[votingId].votingType
             });
         }
         
@@ -316,7 +321,8 @@ contract VotingSystem {
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
                 endTime: votings[votingId].endTime,
-                propositions: votings[votingId].propositions
+                propositions: votings[votingId].propositions,
+                votingType: votings[votingId].votingType
             });
         }
         
@@ -369,7 +375,8 @@ contract VotingSystem {
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
                 endTime: votings[votingId].endTime,
-                propositions: votings[votingId].propositions
+                propositions: votings[votingId].propositions,
+                votingType: votings[votingId].votingType
             });
         }
         

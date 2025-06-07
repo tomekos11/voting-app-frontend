@@ -12,10 +12,7 @@
 </template>
 
 <script setup lang="ts">
-// const { address, shortAddress, balance, connect } = useEthereum();
 
 const ethereumStore = useEthereumStore();
-
-// const { data } = await useFetch('/api/blockchain');
 
 </script>
