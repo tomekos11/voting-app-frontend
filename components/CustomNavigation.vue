@@ -16,12 +16,12 @@
 
       <nav-link to="/your-votes" label="Twoje głosy" />
 
-      <nav-link v-if="votingStore.role === 'admin' || votingStore.role === 'chairman'" to="/create-voting" label="Stwórz głosowanie" />
+      <nav-link v-if="votingStore.hasAdminPermissions" to="/create-voting" label="Stwórz głosowanie" />
 
-      <nav-link v-if="votingStore.role === 'admin' || votingStore.role === 'chairman'" to="/adjust-permissions" label="Kontroluj Permisje" />
+      <nav-link v-if="votingStore.hasAdminPermissions" to="/adjust-permissions" label="Kontroluj Permisje" />
     </div>
 
-    <div class="ml-10">
+    <!-- <div class="ml-10">
       <template v-if="ethereumStore.connection === 'needs_provider_login'">
         <UButton
           v-if="!ethereumStore.address"
@@ -35,8 +35,22 @@
         </div>
         <div class="text-cyan-400">{{ votingStore.role }}</div>
       </div>
-      
-    </div>
+    </div> -->
+
+    <ClientOnly>
+      <div class="ml-10">
+        <UButton
+          class="px-4 py-2 rounded bg-gray-800 text-gray-100 transition"
+          @click="toggleColorMode"
+        >
+          <UIcon
+            :name="colorMode.value === 'dark' ? 'i-heroicons-sun' : 'i-heroicons-moon'"
+            class="w-5 h-5 "
+          />
+        </UButton>
+      </div>
+    </ClientOnly>
+    
   </nav>
 </template>
 
@@ -44,8 +58,12 @@
 const ethereumStore = useEthereumStore();
 const votingStore = useVotingStore();
 
+const colorMode = useColorMode();
 
-const isClient = computed(() => import.meta.client);
+const toggleColorMode = () => {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
+};
+
 
 </script>
 

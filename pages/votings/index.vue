@@ -1,22 +1,28 @@
 <template>
   <div class="space-y-8">
-    <!-- Aktywne głosowania - karuzela -->
+    <active-votings-loading v-if="activeVotingsPending" />
 
     <section v-if="noData">
       Brak stworzonych głosowań.
     </section>
 
-    <section v-if="activeVotings && activeVotings.data.length">
-      <h2 class="text-2xl font-bold mb-4">Aktywne głosowania</h2>
+    <section v-if="activeVotings && activeVotings.data.length" class="px-16">
+      <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Aktywne głosowania</h2>
+
       <UCarousel 
         v-slot="{ item }" 
-        :items="activeVotings.data"
-        :ui="{ item: 'basis-full md:basis-1/2 lg:basis-1/3' }"
+        loop
         arrows
-        class="px-4"
+        dots
+        :autoplay="{ delay: 3500, stopOnMouseEnter: true }"
+        :items="activeVotings.data"
+        :ui="{
+          item: 'basis-full md:basis-1/2 lg:basis-1/3',
+          dot: '',
+        }"
       >
         <UCard 
-          class="h-full mx-2 hover:bg-slate-950 transition-colors"
+          class="h-full mx-2 dark:hover:bg-slate-950 hover:bg-green-50 transition-colors"
         >
           <template #header>
             <h3 class="font-semibold text-lg">{{ item.title }}</h3>
@@ -178,7 +184,7 @@ const timeToStart = (startTime: number) => {
 
 const {
   data: activeVotings,
-  pending: activePending,
+  pending: activeVotingsPending,
   refresh: refreshActive
 } = useFetch('/api/votings/active', {
   query: { page: 0, perPage: 10 },

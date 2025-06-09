@@ -1,11 +1,11 @@
 <template>
   <UApp>
     <NuxtLayout>
-      <NuxtPage/>
+      <NuxtPage />
     </NuxtLayout>
   </UApp>
 </template>
 
 <script setup lang="ts">
-useEthereumStore();
+const ethereumStore = useEthereumStore();
 </script>
