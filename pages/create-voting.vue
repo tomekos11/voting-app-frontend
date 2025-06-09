@@ -128,13 +128,36 @@ const onSubmit = async () => {
     validateVotingParams(preparedData);
 
     try {
-      await ethereumStore.contract.createVoting(
+      const tx = await ethereumStore.contract.createVoting(
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,
         preparedData.votingType,
         preparedData.propositions
       );
+
+      console.log('Transakcja wysłana:', tx.hash);
+
+      const receipt = await tx.wait();
+
+      console.log('✅ Transakcja zatwierdzona:', receipt);
+    
+      const txHash = tx.hash;
+
+      try {
+        const response = await useFetchWithAuth<{ success: boolean; votingId: string }>(
+          '/api/voting',
+          {
+            method: 'POST',
+            body: { txHash }
+          }
+        );
+
+        console.log('✔️ Backend zweryfikował:', response);
+      } catch (e) {
+        console.error('❌ Błąd podczas weryfikacji:', e);
+      }
+
     } catch (e){
       console.error('blad podczas wysylania do blockchainu danych');
       console.error(e);
