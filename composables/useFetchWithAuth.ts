@@ -1,4 +1,6 @@
-export const useFetchWithAuth = async <T>(url: string, options: any = {}): Promise<T> => {
+import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack';
+
+export const useFetchWithAuth = async <T>(url: string, options: NitroFetchOptions<NitroFetchRequest, 'connect' | 'post' | 'head' | 'delete' | 'options' | 'get' | 'patch' | 'put' | 'trace'> = {}): Promise<T> => {
   const config = useRuntimeConfig();
 
   let headers = {};
