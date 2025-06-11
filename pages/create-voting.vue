@@ -99,7 +99,7 @@ const createNewProposition = () => {
 
 const formRef = useTemplateRef('form');
 
-
+const loading = ref(false);
 
 const onSubmit = async () => {
   // Konwersja danych do formatu kompatybilnego z blockchain
@@ -128,13 +128,17 @@ const onSubmit = async () => {
     validateVotingParams(preparedData);
 
     try {
-      await ethereumStore.contract.createVoting(
+      loading.value = true;
+
+      const res = await ethereumStore.contract.createVoting(
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,
         preparedData.votingType,
         preparedData.propositions
       );
+      console.log(res);
+      
     } catch (e){
       console.error('blad podczas wysylania do blockchainu danych');
       console.error(e);

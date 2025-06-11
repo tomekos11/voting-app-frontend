@@ -17,7 +17,7 @@
         :autoplay="{ delay: 3500, stopOnMouseEnter: true }"
         :items="activeVotings.data"
         :ui="{
-          item: 'basis-full md:basis-1/2 lg:basis-1/3'
+          item: 'basis-full md:basis-1/2 lg:basis-1/3 ps-1'
         }"
         @select="onSelect"
       >
@@ -91,8 +91,8 @@
       </div>
     </section>
 
-    <section v-if="incomingVotings && incomingVotings.data.length">
-      <h2 class="text-2xl font-bold mb-4">Nadchodzące głosowania</h2>
+    <section v-if="incomingVotings && incomingVotings.data.length" class="px-16">
+      <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Nadchodzące głosowania</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <UCard 
           v-for="voting in incomingVotings.data"
