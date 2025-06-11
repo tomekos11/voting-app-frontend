@@ -1,4 +1,3 @@
-import { whenever } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { shallowRef, type ShallowRef } from 'vue';
 import type { Abi } from '~/types';
@@ -141,6 +140,25 @@ export const useVotingStore = defineStore('voting', () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const grantAdminPermissions = async (addres: string) => {
+    if (!contract.value) {
+      throw new Error('Kontrakt nie został zainicjalizowany');
+    }
+
+    if (!ethereumStore.address) {
+      throw new Error('Nie połączono z portfelem');
+    }
+
+    try {
+      const res = await contract.value.addAdmin(addres);
+
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
 
   };
 
@@ -171,6 +189,8 @@ export const useVotingStore = defineStore('voting', () => {
     }
   });
 
+  const hasAdminPermissions = computed(() => role.value === 'admin' || role.value === 'chairman');
+
   return {
     // State
     contract: contract as ShallowRef<Abi>,
@@ -178,6 +198,7 @@ export const useVotingStore = defineStore('voting', () => {
     votingsCount,
     role,
     votings,
+    hasAdminPermissions,
     
     // Getters
     totalPages,
@@ -187,7 +208,8 @@ export const useVotingStore = defineStore('voting', () => {
     fetchVotings,
 
     grantPermissionToVote,
-    
+    grantAdminPermissions,
+
     vote,
     initialize,
   };

@@ -46,11 +46,11 @@
                 Wymagana akcja
               </template>
               <template #description>
-                <div v-if="ethereumStore.connection === 'no_provider' || ethereumStore.connection === 'not_established'">
+                <div v-if="ethereumStore.showDownloadMetamaskButton">
                   Niestety nie wykryto u Ciebie zainstalowanego <b>MetaMaska</b>. Najpierw musisz go dodać do rozszerzeń w przeglądarce i stworzyć konto. Jest to koniecznie w celu indentyfikacji.
                 </div>
 
-                <div v-else-if="ethereumStore.connection === 'needs_provider_login'">
+                <div v-else-if="ethereumStore.showLoginButton">
                   Aby móc zagłosować musisz połączyć się ze swoim portfelem (MetaMask). Jest to koniecznie w celu indentyfikacji.
                 </div>                
 
@@ -58,7 +58,7 @@
                   class="mt-2"
                   variant="soft"
                   label="Połącz się z portfelem"
-                  :disabled="ethereumStore.connection === 'no_provider' || ethereumStore.connection === 'not_established'"
+                  :disabled="ethereumStore.showDownloadMetamaskButton"
                   @click="ethereumStore.connect"
                 />
               </template>

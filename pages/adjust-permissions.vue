@@ -1,39 +1,44 @@
 <template>
-  <div class="flex flex-col gap-4 max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
-    <UForm :state="{}" class="flex flex-col gap-4">
-      <UFormField label="Adres użytkownika" name="address">
-        <UInput
-          v-model="address"
-          placeholder="Wprowadź adres portfela"
-          color="primary"
-          class="w-full"
-          highlight
-        />
-      </UFormField>
-      <div class="flex gap-2">
-        <UButton color="primary" :disabled="!address" @click="grantPermissions">
-          Nadaj uprawnienia
-        </UButton>
-        <UButton color="error" variant="outline" :disabled="!address" @click="revokePermissions">
-          Zabierz uprawnienia
-        </UButton>
-        <UButton color="secondary" variant="outline" :disabled="!address" @click="checkPermissions">
-          Sprawdź uprawnienia
-        </UButton>
-      </div>
-    </UForm>
-    {{ error?.data || 'xd' }}
-    <UAlert v-if="error" :color="resultColor" class="mt-2">
-      <template #title>
-        Wynik operacji
-      </template>
-      <template #description>
-        <div v-if="error.code === 'UNCONFIGURED_NAME'">
-          Adres jest niepoprawny. Rollback.
+  <secured-page>
+    <div class="flex flex-col gap-4 max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
+      <UForm :state="{}" class="flex flex-col gap-4">
+        <UFormField label="Adres użytkownika" name="address">
+          <UInput
+            v-model="address"
+            placeholder="Wprowadź adres portfela"
+            color="primary"
+            class="w-full"
+            highlight
+          />
+        </UFormField>
+        <div class="flex gap-2">
+          <UButton color="primary" :disabled="!address" @click="grantPermissions">
+            Nadaj uprawnienia
+          </UButton>
+          <UButton color="primary" variant="ghost" :disabled="!address" @click="grantAdminPermissions">
+            Mianuj adminem
+          </UButton>
+          <UButton color="error" variant="outline" :disabled="!address" @click="revokePermissions">
+            Zabierz uprawnienia
+          </UButton>
+          <UButton color="secondary" variant="outline" :disabled="!address" @click="checkPermissions">
+            Sprawdź uprawnienia
+          </UButton>
         </div>
-      </template>
-    </UAlert>
-  </div>
+      </UForm>
+      {{ error?.data || 'xd' }}
+      <UAlert v-if="error" :color="resultColor" class="mt-2">
+        <template #title>
+          Wynik operacji
+        </template>
+        <template #description>
+          <div v-if="error.code === 'UNCONFIGURED_NAME'">
+            Adres jest niepoprawny. Rollback.
+          </div>
+        </template>
+      </UAlert>
+    </div>
+  </secured-page>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +51,10 @@ const resultColor = ref('primary');
 const votingStore = useVotingStore();
 const error = ref<null>(null);
 
+// definePageMeta({
+//   middleware: ['permissions']
+// });
+
 function grantPermissions() {
   // tu logika nadawania uprawnień
   try {
@@ -54,8 +63,16 @@ function grantPermissions() {
     console.log(e);
     error.value = e;
   }
-  
 }
+
+const grantAdminPermissions = () => {
+  try {
+    const res = votingStore.grantAdminPermissions(address.value);
+  } catch (e) {
+    console.log(e);
+    error.value = e;
+  }
+};
 
 function revokePermissions() {
   // tu logika odbierania uprawnień
