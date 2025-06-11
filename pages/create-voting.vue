@@ -82,6 +82,15 @@
 import { ethers } from 'ethers';
 import type { PropositionOffChain } from '~/types/types';
 
+interface VotingParams {
+  metaCID?: string;
+  title: string;
+  startTime: bigint;
+  endTime: bigint;
+  votingType: 0 | 1;
+  propositions: string[];
+}
+
 const ethereumStore = useEthereumStore();
 
 const form = ref({});
@@ -89,7 +98,7 @@ const form = ref({});
 const title = ref('tytul');
 const startTime = ref('');
 const endTime = ref('');
-const votingType = ref(0);
+const votingType = ref<0 | 1>(0);
 
 const propositions = ref<PropositionOffChain[]>([]);
 
@@ -99,21 +108,23 @@ const createNewProposition = () => {
 
 const formRef = useTemplateRef('form');
 
+const loading = ref(false);
+
+const countSHA = (data: string) => {
+  const bytes = ethers.toUtf8Bytes(data);
+  const hash = ethers.sha256(bytes);
+  return hash;
+};
 
 
 const onSubmit = async () => {
   // Konwersja danych do formatu kompatybilnego z blockchain
-  const preparedData = {
+  const preparedData: VotingParams = {
     title: title.value,
-    startTime: Math.floor(new Date(startTime.value).getTime() / 1000),
-    endTime: Math.floor(new Date(endTime.value).getTime() / 1000),
+    startTime: BigInt(Math.floor(new Date(startTime.value).getTime() / 1000)),
+    endTime: BigInt(Math.floor(new Date(endTime.value).getTime() / 1000)),
     votingType: votingType.value,
-    propositions: propositions.value.map(proposition => {
-      const bytes = ethers.toUtf8Bytes(proposition.name);
-      console.log(bytes);
-      const hash = ethers.sha256(bytes);
-      return hash;
-    })
+    propositions: propositions.value.map(proposition => countSHA(JSON.stringify(proposition)))
   };
 
   console.log(preparedData.startTime);
@@ -127,8 +138,12 @@ const onSubmit = async () => {
   try {
     validateVotingParams(preparedData);
 
+    preparedData.metaCID = countSHA(JSON.stringify(preparedData));
+
     try {
-      const tx = await ethereumStore.contract.createVoting(
+      loading.value = true;
+
+      const res = await ethereumStore.contract.createVoting(
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,
@@ -136,27 +151,14 @@ const onSubmit = async () => {
         preparedData.propositions
       );
 
-      console.log('Transakcja wysłana:', tx.hash);
+      console.log(res);
 
-      const receipt = await tx.wait();
+      const res2 = await useFetchWithAuth('/api/cos-tam', {
+        method: 'post',
+        body: preparedData,
+      });
 
-      console.log('✅ Transakcja zatwierdzona:', receipt);
-    
-      const txHash = tx.hash;
-
-      try {
-        const response = await useFetchWithAuth<{ success: boolean; votingId: string }>(
-          '/api/voting',
-          {
-            method: 'POST',
-            body: { txHash }
-          }
-        );
-
-        console.log('✔️ Backend zweryfikował:', response);
-      } catch (e) {
-        console.error('❌ Błąd podczas weryfikacji:', e);
-      }
+      console.log(res2);
 
     } catch (e){
       console.error('blad podczas wysylania do blockchainu danych');
@@ -170,14 +172,6 @@ const onSubmit = async () => {
 };
 
 const toast = useToast();
-
-interface VotingParams {
-  title: string;
-  startTime: bigint;
-  endTime: bigint;
-  votingType: 0 | 1;
-  propositions: string[];
-}
 
 const validateVotingParams = (params: VotingParams) => {
   console.log(params);

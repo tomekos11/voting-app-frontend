@@ -17,8 +17,9 @@
         :autoplay="{ delay: 3500, stopOnMouseEnter: true }"
         :items="activeVotings.data"
         :ui="{
-          item: 'basis-full md:basis-1/2 lg:basis-1/3'
+          item: 'basis-full md:basis-1/2 lg:basis-1/3 ps-1'
         }"
+        @select="onSelect"
       >
         <UCard 
           class="h-full mx-2 dark:hover:bg-slate-950 hover:bg-green-50 transition-colors"
@@ -90,8 +91,8 @@
       </div>
     </section>
 
-    <section v-if="incomingVotings && incomingVotings.data.length">
-      <h2 class="text-2xl font-bold mb-4">Nadchodzące głosowania</h2>
+    <section v-if="incomingVotings && incomingVotings.data.length" class="px-16">
+      <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Nadchodzące głosowania</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <UCard 
           v-for="voting in incomingVotings.data"
@@ -213,6 +214,10 @@ const {
 
 const carousel = useTemplateRef('carousel');
 const activeIndex = ref(0);
+
+const onSelect = (index: number) => {
+  activeIndex.value = index;
+};
 
 const select = (index: number) => {
   activeIndex.value = index;
