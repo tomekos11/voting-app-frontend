@@ -93,18 +93,23 @@
 
     <section v-if="incomingVotings && incomingVotings.data.length" class="px-16">
       <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Nadchodzące głosowania</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <div class="flex justify-center mb-5 md:mb-2">
+        <UPagination v-model:page="incomingPage" :total="incomingVotings.pagination.total" :items-per-page="incomingPerPage" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <UCard 
           v-for="voting in incomingVotings.data"
           :key="voting.id"
-          class="opacity-75 hover:opacity-100 transition-opacity bg-gray-50"
+          class="opacity-75 hover:opacity-100 transition-opacity bg-gray-50 dark:bg-slate-800 text-gray-400"
         >
           <template #header>
-            <h3 class="font-semibold text-gray-700">{{ voting.title }}</h3>
+            <h3 class="font-semibold text-gray-700 dark:text-gray-500">{{ voting.title }}</h3>
           </template>
 
           <div class="space-y-2">
-            <div class="flex items-center gap-2 text-sm text-gray-600">
+            <div class="flex items-center gap-2 text-sm">
               <UIcon name="i-heroicons-calendar" class="w-5 h-5" />
               <span>Rozpoczyna się: {{ formatDate(voting.startTime) }}</span>
             </div>
@@ -134,6 +139,9 @@ import type { Voting } from '~/types/types';
 // const votingStore = useVotingStore();
 const ethereumStore = useEthereumStore();
 const now = ref(DateTime.now());
+
+const incomingPage = ref(1);
+const incomingPerPage = ref(8);
 
 // Automatyczna aktualizacja czasu co sekundę
 // useInterval(1000, () => {
@@ -209,7 +217,11 @@ const {
   pending: incomingPending,
   refresh: refreshIncoming
 } = useFetch('/api/votings/incoming', {
-  query: { page: 0, perPage: 10 },
+  query: {
+    page: computed(() => incomingPage.value - 1),
+    perPage: incomingPerPage
+  },
+  watch: [incomingPage, incomingPerPage],
 });
 
 const carousel = useTemplateRef('carousel');

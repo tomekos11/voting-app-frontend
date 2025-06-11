@@ -1,85 +1,119 @@
 <template>
-  <UCard
-    class="m-4 bg-transparent"
-    :ui="{
-      footer: 'flex justify-center'
-    }"
-  >
-    <template #header>
-      Stwórz głosowanie
-    </template>
-    <UForm ref="form" :state="form" class="space-y-4 p-4" @submit="onSubmit">
-      <!-- Tytuł głosowania -->
-      <UFormField label="Tytuł głosowania" name="title" required>
-        <UInput v-model="title" placeholder="Wybierz prezesa spółki" />
-      </UFormField>
 
-      <!-- Daty głosowania -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <UFormField label="Czas rozpoczęcia" name="startTime" required>
-          <UInput v-model="startTime" type="datetime-local" />
-        </UFormField>
+  <section>
+
+    <div class="flex items-center justify-center gap-3 mb-10">
+      <UIcon name="i-lucide-vote" class="w-7 h-7 text-primary" />
+      <h2 class="text-2xl font-bold dark:text-gray-100 text-primary text-center">Stwórz głosowanie</h2>
+    </div>
       
-        <UFormField label="Czas zakończenia" name="endTime" required>
-          <UInput v-model="endTime" type="datetime-local" />
-        </UFormField>
-      </div>
+    <UStepper
+      ref="stepper"
+      v-model:model-value="step" :items="items" :ui="{
+        container: 'mb-5'
+      }">
+      <template #name>
 
-      <!-- Typ głosowania -->
-      <UFormField label="Typ głosowania" name="votingType" required>
-        <USelect
-          v-model:model-value="votingType"
-          :items="[
-            { value: 0, label: 'Publiczne' },
-            { value: 1, label: 'Prywatne' }
-          ]"
-
-          value-key="value"
-          label-key="label"
-        />
-      </UFormField>
-
-      <!-- Kandydaci - dynamiczna lista -->
-      <UFormField label="Propozycje" class="space-y-2">
-        <UButton
-          label="Dodaj Propozycje"
-          size="sm"
-          @click="createNewProposition"
-        />
-
-
-        <div v-for="(_, index) in propositions" :key="index" class="mt-2">
-          <Proposition 
-            :index="index"
-            :model-value="propositions[index]"
-            @remove="deleteProposition(index)"
-          />
-        </div>
-      </UFormField>
-    </UForm>
-
-    <template #footer>
-      <UButton
-        type="submit"
-        label="Utwórz głosowanie"
-        :disabled="propositions.length < 2"
-        @click="formRef?.submit()"
-      >
-        <div>Utwórz głosowanie</div>
-        <UTooltip>
-          <UIcon name="i-lucide-circle-help" />
-          <template v-if="propositions.length < 2" #content>
-            Wymagane są minimalnie 2 propozycje w głosowaniu
+        <UCard
+          class="m-4 dark:bg-transparent mx-auto max-w-xl"
+          :ui="{
+            footer: 'flex justify-center'
+          }"
+        >
+          <template #header>
+            <div class="flex items-center gap-3 mb-6">
+              <h2 class="text-2xl font-bold dark:text-gray-100 text-primary">Wybierz tytuł i typ głosowania</h2>
+            </div>
           </template>
-        </UTooltip>
-      </UButton>
-      
-    </template>
-  </UCard>
+
+          <create-voting-title-and-type v-model:title="title" v-model:voting-type="votingType" />
+
+          <UAlert v-if="titleError || votingTypeError" class="bg-error text-white my-3">
+            <template #title>
+              Wystąpił Błąd Walidacji
+            </template>
+            <template #description>
+              {{ titleError || votingTypeError }}
+            </template>
+          </UAlert>
+
+          <div class="flex justify-center mt-4">
+            <UButton label="Przejdź do następnego kroku" icon="i-lucide-circle-arrow-right" @click="stepper?.next" />
+          </div>
+
+        </UCard>
+      </template>
+  
+      <template #span>
+        <UCard
+          class="m-4 dark:bg-transparent mx-auto max-w-xl"
+          :ui="{
+            footer: 'flex justify-center'
+          }"
+        >
+          <template #header>
+            <div class="flex items-center gap-3 mb-6">
+              <h2 class="text-2xl font-bold dark:text-gray-100 text-primary">Wybierz datę początku i końca głosowania</h2>
+            </div>
+          </template>
+
+          <create-voting-span v-model:start-time="startTime" v-model:end-time="endTime" />
+
+          <UAlert v-if="timeError" class="bg-error text-white my-3">
+            <template #title>
+              Wystąpił Błąd Walidacji
+            </template>
+            <template #description>
+              {{ timeError }}
+            </template>
+          </UAlert>
+
+          <div class="flex justify-center mt-4">
+            <UButton label="Przejdź do następnego kroku" icon="i-lucide-circle-arrow-right" @click="stepper?.next" />
+          </div>
+
+        </UCard>
+      </template>
+  
+      <template #propositions>
+        <UCard
+          class="m-4 dark:bg-transparent mx-auto max-w-xl"
+          :ui="{
+            footer: 'flex justify-center'
+          }"
+        >
+          <template #header>
+            <div class="flex items-center gap-3 mb-6">
+              <h2 class="text-2xl font-bold dark:text-gray-100 text-primary">Wybierz tytuł i typ głosowania</h2>
+            </div>
+          </template>
+
+          <create-voting-propositions v-model:propositions="propositions" />
+
+          <UAlert v-if="propositionError" class="bg-error text-white my-3">
+            <template #title>
+              Wystąpił Błąd Walidacji
+            </template>
+            <template #description>
+              {{ propositionError }}
+            </template>
+          </UAlert>
+
+          <div class="flex justify-center mt-4">
+            <UButton label="Stwórz głosowanie" icon="i-lucide-circle-arrow-right" :disabled="propositions.length < 2" @click="submit" />
+          </div>
+
+
+        </UCard>
+      </template>
+    </UStepper>
+  </section>
 </template>
 
 <script setup lang="ts">
+import type { StepperItem } from '@nuxt/ui';
 import { ethers } from 'ethers';
+import type { Ref } from 'vue';
 import type { PropositionOffChain, PropositionOffChainExtend } from '~/types/types';
 
 interface VotingParams {
@@ -92,8 +126,8 @@ interface VotingParams {
 }
 
 const ethereumStore = useEthereumStore();
-
-const form = ref({});
+const stepper = useTemplateRef('stepper');
+const step = ref(0);
 
 const title = ref('tytul');
 const startTime = ref('');
@@ -102,13 +136,26 @@ const votingType = ref<0 | 1>(0);
 
 const propositions = ref<PropositionOffChain[]>([]);
 
-const createNewProposition = () => {
-  propositions.value.push({ name: '12345678901234567890123456789012', details: [], img: '' });
-};
-
-const formRef = useTemplateRef('form');
-
 const loading = ref(false);
+
+
+const items: StepperItem[] = [
+  {
+    slot: 'name' as const,
+    title: 'Tytuł',
+    description: 'Wybierz tytuł i typ głosowania',
+    icon: 'i-lucide-house'
+  }, {
+    slot: 'span' as const,
+    title: 'Czas trwania',
+    description: 'Wybierz zakres czasu głosowania',
+    icon: 'i-lucide-truck'
+  }, {
+    slot: 'propositions' as const,
+    title: 'Propozycje',
+    description: 'Dostosuj propozycje do głosowania'
+  }
+];
 
 const countSHA = (data: string) => {
   const bytes = ethers.toUtf8Bytes(data);
@@ -136,7 +183,7 @@ const prepareProposition = (prop: {
 };
 
 
-const onSubmit = async () => {
+const submit = async () => {
   // Konwersja danych do formatu kompatybilnego z blockchain
   const preparedData: VotingParams = {
     title: title.value,
@@ -190,30 +237,65 @@ const onSubmit = async () => {
   } catch (e) {
     console.error(e);
   }
-
 };
+
+const titleError = ref('');
+const votingTypeError = ref('');
+const timeError = ref('');
+const propositionError = ref('');
 
 const toast = useToast();
 
-const validateVotingParams = (params: VotingParams) => {
-  console.log(params);
-  if(!params.title) throw new Error('No title');
-  if(!params.startTime || !params.endTime) throw new Error('No start time or end time');
-  if(Number.isNaN(params.startTime) || Number.isNaN(params.endTime)) throw new Error('Start time or end time cant be nan');
-  if(params.startTime >= params.endTime) throw new Error('Invalid time range');
-  if(params.propositions.some(c => c.length === 0)) throw new Error('Empty candidate name');
+
+const clearErrors = () => {
+  titleError.value = '';
+  votingTypeError.value = '';
+  timeError.value = '';
+  propositionError.value = '';
 };
 
-const deleteProposition = (index: number) => {
-  try{
-    propositions.value.splice(index, 1);
+const throwError = (errorRef: Ref<string>, _step: number, error: string) => {
+  errorRef.value = error;
+  step.value = _step;
 
-    toast.add({
-      title: 'Usuwanie propozycji',
-      description: `Poprawnie usunięto propozycje # ${index + 1}`
-    });
-  } catch (e) {
-    console.error(e);
+  toast.add({
+    title: 'Wystąpił błąd',
+    description: error,
+    color: 'error',
+    icon: 'i-heroicons-x-circle'
+  });
+
+  throw new Error(error);
+};
+
+
+const validateVotingParams = (params: VotingParams) => {
+  clearErrors();
+
+  console.log(params);
+  if(!params.title) {
+    throwError(titleError, 0, 'Brak tytułu');
+  }
+
+  if(params.votingType === null || params.votingType === undefined) {
+    throwError(votingTypeError, 0, 'Brak ustawionego typu głosowania');
+  }
+
+  if(!params.startTime || !params.endTime) {
+    throwError(timeError, 1, 'Brak daty startu lub daty końca głosowania');
+  }
+
+  if(Number.isNaN(params.startTime) || Number.isNaN(params.endTime)) {
+    throwError(timeError, 1, 'Któraś z dat jest typu "NaN"');
+  }
+
+  if(params.startTime >= params.endTime) {
+    throwError(timeError, 1, 'Niepoprawny zakres dat (pierwsza później niż druga)');
+  }
+
+  if(params.propositions.some(c => c.length === 0)) {
+    throwError(propositionError, 2, 'Pusta lista propozycji');
   }
 };
+
 </script>

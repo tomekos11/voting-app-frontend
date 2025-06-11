@@ -1,12 +1,19 @@
 <template>
-  <div :class="`border border-slate-950 bg-gray-950 rounded-lg space-y-3`">
+  <div :class="`border border-gray-400 bg-gray-50   dark:border-slate-950 dark:bg-slate-800 rounded-lg space-y-3`">
     <!-- Nagłówek -->
     <UCollapsible v-model:open="isExpanded"  disabled>
-      <div class="flex justify-between items-center hover:bg-slate-800 cursor-pointer p-4">
-        <div class="flex gap-2 items-center">
-          <UIcon v-if="isLocked" name="i-lucide-lock" />
-          <h3 class="font-semibold">Propozycja #{{ index + 1 }}</h3>
+      <div :class="`flex justify-between items-center dark:hover:bg-slate-900 cursor-pointer p-3 ${isExpanded ? 'rounded-t-lg' : 'rounded-lg'}`">
+        <div class="flex flex-col">
+          <div class="flex gap-2 items-center">
+            <UIcon v-if="isLocked" name="i-lucide-lock" />
+            <h3 class="font-semibold">Propozycja #{{ index + 1 }}</h3>
+  
+          </div>
+          <div v-if="proposition.name" class="text-sm text-gray-500">
+            {{ proposition.name }}
+          </div>
         </div>
+        
 
         <div class="flex gap-2 items-center">
           <UButton
@@ -18,7 +25,7 @@
             @click.stop="isLocked = true"
           />
 
-          <delete-proposition-modal v-if="!isLocked" :index="index" :propostion="propostion" @confirm-removing="emit('remove')"/>
+          <delete-proposition-modal v-if="!isLocked" :index="index" :propostion="proposition" @confirm-removing="emit('remove')"/>
         </div>
       </div>
 
@@ -27,7 +34,7 @@
           <!-- Nazwa propozycji -->
           <UFormField label="Nazwa" required>
             <UInput
-              v-model="propostion.name"
+              v-model="proposition.name"
               :disabled="isLocked"
               placeholder="Nazwa systemu głosowania"
             />
@@ -36,7 +43,7 @@
           <!-- Zdjęcie -->
           <UFormField label="Zdjęcie (Base64)" class="relative mt-3">
             <UInput
-              v-model="propostion.img"
+              ref="fileInput"
               type="file"
               accept="image/*"
               :disabled="isLocked"
@@ -44,15 +51,15 @@
             />
 
             <img
-              v-if="propostion.img" 
-              :src="propostion.img" 
+              v-if="proposition.img" 
+              :src="proposition.img" 
               class="mt-2 max-h-32 object-contain"
             >
           </UFormField>
 
           <!-- Dynamiczne detale -->
           <UFormField label="Dodatkowe dane o propozycji" class="mt-3">
-            <div v-for="(detail, i) in propostion.details" :key="i" class="flex gap-2 mb-2">
+            <div v-for="(detail, i) in proposition.details" :key="i" class="flex gap-2 mb-2">
               <UInput
                 v-model="detail.key"
                 placeholder="Parametr (np. hash algorithm)"
@@ -108,7 +115,7 @@ defineProps<{
   index: number
 }>();
 
-const propostion = defineModel<PropositionOffChain>({
+const proposition = defineModel<PropositionOffChain>({
   required: true
 });
 
@@ -122,14 +129,11 @@ const handleImageUpload = async (event) => {
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      console.log(e.target?.result);
-
-      propostion.value.img = e.target.result;
+      proposition.value.img = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 };
-
 const availableKeys = [
   'Imie kandydata',
   'Drugie imie kandydata',
@@ -140,10 +144,14 @@ const availableKeys = [
 ];
 
 const addDetail = () => {
-  propostion.value.details.push({ key: '', value: '' });
+  proposition.value.details.push({ key: '', value: '' });
 };
 
 const removeDetail = (index: number) => {
-  propostion.value.details.splice(index, 1);
+  proposition.value.details.splice(index, 1);
 };
+
+defineExpose({
+  collapse: () => isExpanded.value = false
+});
 </script>
