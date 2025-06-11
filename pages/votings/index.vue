@@ -7,7 +7,7 @@
     </section>
 
     <section v-if="activeVotings && activeVotings.data.length" class="px-16">
-      <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Aktywne głosowania</h2>
+      <h2 class="text-2xl font-bold mb-4 pl-5">Aktywne głosowania</h2>
 
       <UCarousel
         ref="carousel"

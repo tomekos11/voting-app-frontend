@@ -35,28 +35,32 @@
             class="w-5 h-5"
           >
         </div>
+
+        <ClientOnly v-if="isClient">
+          <UButton
+            v-if="!ethereumStore.address || ethereumStore.connection !== 'established'"
+            class="flex items-center p-1 px-3 bg-secondary/10 disabled:bg-secondary/10 hover:bg-secondary/15  text-gray-300"
+            label="Połącz"
+            :loading="!ethereumStore.connection"
+            @click="ethereumStore.connect"
+          />
+
+          <div v-else-if="ethereumStore.connection === 'established'" class="text-sm text-center">
+            <div class="bg-secondary/10 rounded-r-md p-1 text-gray-300">
+              {{ ethereumStore.shortAddress }}
+            </div>
+          <!-- <div class="text-cyan-400">{{ votingStore.role }}</div> -->
+          </div>
+        </ClientOnly>
+
         <UButton
-          v-if="!ethereumStore.address || ethereumStore.connection !== 'established'"
-          class="flex items-center p-1 px-3 bg-secondary/10 hover:bg-secondary/15 text-gray-300"
+          v-else
+          class="flex items-center p-1 px-3 bg-secondary/10 disabled:bg-secondary/10 hover:bg-secondary/15 text-gray-300"
           label="Połącz"
-          :loading="ethereumStore.connection === null"
-          @click="ethereumStore.connect"
+          :loading="true"
         />
 
-        <div v-else-if="ethereumStore.connection === 'established'" class="text-sm text-center">
-          <div class="bg-secondary/10 rounded-r-md p-1 text-gray-300">
-            {{ ethereumStore.shortAddress }}
-          </div>
-          <!-- <div class="text-cyan-400">{{ votingStore.role }}</div> -->
-        </div>
       </UButtonGroup>
-      <!-- </template> -->
-      <!-- <div v-else-if="ethereumStore.connection === 'established'" class="text-sm text-center">
-        <div>
-          {{ ethereumStore.shortAddress }}
-        </div>
-        <div class="text-cyan-400">{{ votingStore.role }}</div>
-      </div> -->
       <ClientOnly>
         <UButton
           class="p-1 rounded text-gray-100 transition cursor-pointer dark:hover:text-yellow-600 hover:text-blue-500 bg-transparent hover:bg-secondary/15 py-1 px-1.5"
@@ -107,9 +111,24 @@
     </transition>
 
 
-    <UModal v-model:open="showAlreadyProcessingModal" title="Problem z połączeniem">
+    <UModal v-model:open="showAlreadyProcessingModal" title="Problem z połączeniem" @after:leave="ethereumStore.errorCode = null">
       <template #body>
         Masz już aktywne połączenie z portfelem. Zabezpieczenia Metamaska ograniczają możliwosć wielu prób połączeń. Z uwagi na to, wejdź w rozszerzenia i tam zaloguj się do rozszerzenia.
+      </template>
+    </UModal>
+
+    <UModal v-model:open="showNotMetamaskDetectedModal" title="Problem z połączeniem" @after:leave="ethereumStore.errorCode = null">
+      <template #body>
+        <div class="flex flex-col items-center">
+          <img
+            src="/public/metamask.png"
+            alt="MetaMask"
+            class="w-[50%]"
+          >
+          <div>
+            Nie wykryto wymaganego rozszerzenia Metamask.
+          </div>
+        </div>
       </template>
     </UModal>
   </nav>
@@ -128,12 +147,23 @@ const toggleColorMode = () => {
 
 const menuOpen = ref(false);
 const showAlreadyProcessingModal = ref(false);
+const showNotMetamaskDetectedModal = ref(false);
+
+const isClient = computed(() => import.meta.client);
 
 watch(() => ethereumStore.errorCode, (nv) => {
+  console.log(nv);
+   
   if (nv === -32002) {
     showAlreadyProcessingModal.value = true;
   }
+
+  else if( nv === 2137) {
+    showNotMetamaskDetectedModal.value = true;
+  }
+
 });
+
 </script>
 
 <style scoped>

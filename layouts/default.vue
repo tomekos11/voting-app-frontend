@@ -8,6 +8,7 @@
         from-slate-100 via-slate-200 to-cyan-100
         dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950
         flex-grow
+        py-10
       "
     >
       <slot />

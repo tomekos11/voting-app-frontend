@@ -48,17 +48,20 @@ export const useEthereumStore = defineStore('ethereum', () => {
       return;
     }
 
+    errorCode.value = null;
+
     try {
     // Inicjalizacja providera (możesz zunifikować tę logikę)
       if (!window.ethereum) {
-        console.log(import.meta.client);
         connection.value = 'no_provider';
-        console.log(connection.value);
+
+        if(requestLogin) {
+          errorCode.value = 2137;
+        }
+
         console.warn('@@@ MetaMask nie jest dostępny @@@');
         return;
       }
-
-      errorCode.value = null;
 
       // Wybór metody pobierania kont
       const method = requestLogin ? 'eth_requestAccounts' : 'eth_accounts';
@@ -121,17 +124,17 @@ export const useEthereumStore = defineStore('ethereum', () => {
 
   return {
     // State
-    address,
-    balance,
+    address: skipHydrate(address),
+    balance: skipHydrate(balance),
     connection: skipHydrate(connection),
-    provider,
-    signer,
+    provider: skipHydrate(provider),
+    signer: skipHydrate(signer),
     contract,
     // Getters
-    shortAddress,
-    errorCode,
+    shortAddress: skipHydrate(shortAddress),
+    errorCode: skipHydrate(errorCode),
     
-    showDownloadMetamaskButton,
+    showDownloadMetamaskButton: skipHydrate(showDownloadMetamaskButton),
     showLoginButton: skipHydrate(showLoginButton),
 
     // Actions
