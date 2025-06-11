@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ethers } from 'ethers';
 import { DateTime } from 'luxon';
-import { Abi__factory, type Abi } from '~/types';
+import { VotingSystem__factory, type VotingSystem } from '~/types';
 import type { Voting } from '~/types/types';
 
 interface ActiveVoting {
@@ -13,7 +13,7 @@ interface ActiveVoting {
 export const useInfuraStore = defineStore('infura', () => {
   // State
   const provider = shallowRef<ethers.JsonRpcProvider>();
-  const contract = shallowRef<Abi>();
+  const contract = shallowRef<VotingSystem>();
   const loading = ref(true);
   const error = ref<string | null>(null);
 
@@ -37,7 +37,7 @@ export const useInfuraStore = defineStore('infura', () => {
 
       await provider.value.ready;
       
-      contract.value = Abi__factory.connect(
+      contract.value = VotingSystem__factory.connect(
         config.public.CONTRACT_ADDRESS,
         provider.value
       );

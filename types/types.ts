@@ -21,3 +21,12 @@ export interface Voting {
 export interface PropositionOffChainExtend extends PropositionOffChain {
   hash: string;
 }
+
+export interface VotingParams {
+  metaCID?: string;
+  title: string;
+  startTime: number;
+  endTime: number;
+  votingType: 0 | 1;
+  propositions: PropositionOffChainExtend[];
+}

@@ -8,13 +8,15 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "generate:abi": "npx typechain --target ethers-v6 --out-dir types --always-generate-overloads ./abi.json"
+    "compile": "npx hardhat compile",
+    "generate:abi": "npx typechain --target ethers-v6 --out-dir types --always-generate-overloads ./artifacts/contracts/smart_contract.sol/VotingSystem.json"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.4.1",
     "@typechain/ethers-v6": "^0.5.1",
     "@types/luxon": "^3.6.2",
     "eslint": "^9.27.0",
+    "hardhat": "^2.24.2",
     "prettier-eslint": "^16.3.0",
     "typechain": "^8.3.2",
     "typescript": "^5.8.3",
