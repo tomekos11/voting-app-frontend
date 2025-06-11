@@ -18,4 +18,6 @@ export interface Voting {
   propositions: string[];
 }
 
-export type VotingType = 'incoming' | 'active' | 'completed';
+export interface PropositionOffChainExtend extends PropositionOffChain {
+  hash: string;
+}
