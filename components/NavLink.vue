@@ -1,9 +1,8 @@
 <template>
   <UButton
     :to="to"
-    class="nav-btn"
+    class="bg-transparent hover:bg-secondary/15 py-1 px-1.5 text-gray-300"
     :color="$route.fullPath === to ? 'success' :'neutral'"
-    variant="link"
     :label="label"
   />
 </template>

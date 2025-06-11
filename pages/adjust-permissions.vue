@@ -1,7 +1,8 @@
 <template>
   <secured-page>
-    <div class="flex flex-col gap-4 max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
-      <UForm :state="{}" class="flex flex-col gap-4">
+    <div class="flex items-center justify-center min-h-[80svh] space-y-4 max-w-md mx-auto">
+      <!-- <div class="flex flex-col gap-4 max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg"> -->
+      <UForm :state="{}" class="flex flex-col gap-4 rounded-xl p-3">
         <UFormField label="Adres użytkownika" name="address">
           <UInput
             v-model="address"
@@ -26,7 +27,7 @@
           </UButton>
         </div>
       </UForm>
-      {{ error?.data || 'xd' }}
+
       <UAlert v-if="error" :color="resultColor" class="mt-2">
         <template #title>
           Wynik operacji

@@ -9,16 +9,15 @@
     <section v-if="activeVotings && activeVotings.data.length" class="px-16">
       <h2 class="text-2xl font-bold mb-4 mt-10 pl-5">Aktywne głosowania</h2>
 
-      <UCarousel 
+      <UCarousel
+        ref="carousel"
         v-slot="{ item }" 
         loop
         arrows
-        dots
         :autoplay="{ delay: 3500, stopOnMouseEnter: true }"
         :items="activeVotings.data"
         :ui="{
-          item: 'basis-full md:basis-1/2 lg:basis-1/3',
-          dot: '',
+          item: 'basis-full md:basis-1/2 lg:basis-1/3'
         }"
       >
         <UCard 
@@ -75,6 +74,20 @@
           </div>
         </UCard>
       </UCarousel>
+
+
+      <!-- kulki nawigacyjne -->
+      <div class="flex gap-2 justify-center pt-4 max-w-xs mx-auto" >
+        <div
+          v-for="(item, index) in activeVotings.data"
+          :key="index"
+          class="size-2 rounded-full cursor-pointer transition-colors"
+          :class="activeIndex === index ? 'bg-green-600 opacity-100' : 'bg-gray-400 opacity-50 hover:opacity-80'"
+          @click="select(index)"
+          @mouseenter="stopCarousel"
+          @mouseleave="startCarousel"
+        />
+      </div>
     </section>
 
     <section v-if="incomingVotings && incomingVotings.data.length">
@@ -197,4 +210,22 @@ const {
 } = useFetch('/api/votings/incoming', {
   query: { page: 0, perPage: 10 },
 });
+
+const carousel = useTemplateRef('carousel');
+const activeIndex = ref(0);
+
+const select = (index: number) => {
+  activeIndex.value = index;
+
+  carousel.value?.emblaApi?.scrollTo(index);
+};
+
+
+const stopCarousel = () => {
+  carousel.value?.emblaApi?.plugins()?.autoplay?.stop();
+};
+
+const startCarousel = () => {
+  carousel.value?.emblaApi?.plugins()?.autoplay?.play();
+};
 </script>
