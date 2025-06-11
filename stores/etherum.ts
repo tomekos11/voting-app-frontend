@@ -16,6 +16,8 @@ export const useEthereumStore = defineStore('ethereum', () => {
 
   const connection = ref<'problems_with_wallet' | 'no_provider' | 'needs_provider_login' | 'established' | null>(null);
 
+  const errorCode = ref<null | number>(null);
+
   const init = () => handleConnection(false);
   const connect = () => handleConnection(true);
   
@@ -56,6 +58,8 @@ export const useEthereumStore = defineStore('ethereum', () => {
         return;
       }
 
+      errorCode.value = null;
+
       // Wybór metody pobierania kont
       const method = requestLogin ? 'eth_requestAccounts' : 'eth_accounts';
       const accounts = await window.ethereum.request({ method });
@@ -83,6 +87,7 @@ export const useEthereumStore = defineStore('ethereum', () => {
     } catch (error) {
       console.error('Błąd połączenia:', error);
       connection.value = 'problems_with_wallet';
+      errorCode.value = error.code;
       throw error;
     } finally {
       console.log('after handleConnection');
@@ -95,7 +100,7 @@ export const useEthereumStore = defineStore('ethereum', () => {
     signer.value = provider.value ? await provider.value.getSigner() : null;
   });
 
-  const showLoginButton = computed(() => (connection.value === 'needs_provider_login'));
+  const showLoginButton = computed(() => (connection.value === 'needs_provider_login' || connection.value === 'problems_with_wallet'));
   const showDownloadMetamaskButton = computed(() => connection.value === 'needs_provider_login');
 
   // Inicjalizacja
@@ -104,11 +109,13 @@ export const useEthereumStore = defineStore('ethereum', () => {
     init();
 
     window.ethereum?.on('accountsChanged', ([newAddress]: string[]) => {
-      address.value = newAddress || '';
+      // address.value = newAddress || '';
+      console.log('accountsChanged');
     });
 
     window.ethereum?.on('chainChanged', () => {
-      window.location.reload();
+      // window.location.reload();
+      console.log('accountsChanged');
     });
   }
 
@@ -122,9 +129,10 @@ export const useEthereumStore = defineStore('ethereum', () => {
     contract,
     // Getters
     shortAddress,
+    errorCode,
     
     showDownloadMetamaskButton,
-    showLoginButton,
+    showLoginButton: skipHydrate(showLoginButton),
 
     // Actions
     connect,

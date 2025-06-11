@@ -1,12 +1,5 @@
 <template>
   <div class="text-center">
-
-    <div v-if="ethereumStore.balance" class="mt-4 text-white">
-      Saldo: {{ ethereumStore.balance }} ETH
-    </div>
-    <who-am-i />
-
-
     <div class="container mx-auto px-4 py-12 max-w-4xl">
       <h1 class="text-3xl font-bold text-center mb-6">
         O aplikacji do głosowań blockchainowych
@@ -17,7 +10,7 @@
           <h2 class="text-xl font-semibold mb-4 text-start">Czym jest aplikacja?</h2>
           
           <p class="text-gray-700 mb-4 text-start">
-            To nowoczesna platforma do przeprowadzania bezpiecznych i transparentnych głosowań online, wykorzystująca technologię blockchain Ethereum. Integruje się ze specjalnie zaprojektowanym smart kontraktem <b class="text-cyan-400">{{ contractAddress }}</b>, dzięki czemu każdy głos jest nieodwracalnie zapisywany w sieci.
+            To nowoczesna platforma do przeprowadzania bezpiecznych i transparentnych głosowań online, wykorzystująca technologię blockchain Ethereum. Integruje się ze specjalnie zaprojektowanym smart kontraktem, dzięki czemu każdy głos jest nieodwracalnie zapisywany w sieci.
           </p>
 
           <div class="flex items-center gap-2">
