@@ -6,6 +6,7 @@ struct VotingInfo {
     string title;
     uint256 startTime;
     uint256 endTime;
+    bytes32 metaCID;
     bytes32[] propositions;
     VotingType votingType;
 }
@@ -16,7 +17,7 @@ contract VotingSystem {
     struct VotingStats {
         uint256 totalVoters;
         uint256 votesCast;
-        mapping(uint256 => uint256) propositionVotes;
+        uint256[] propositionVotes;
     }
 
     struct Voting {
@@ -25,6 +26,7 @@ contract VotingSystem {
         uint256 startTime;
         uint256 endTime;
         VotingType votingType;
+        bytes32 metaCID;
         bytes32[] propositions;
         mapping(address => bool) hasVoted;
         mapping(address => uint256) votes;
@@ -70,12 +72,27 @@ contract VotingSystem {
         admins[_admin] = false;
     }
 
+    //6.5 Info o userze
+
+    function getRole(address _addr) external view returns (string memory) {
+        if (_addr == chairman) {
+            return "chairman";
+        } else if (admins[_addr]) {
+            return "admin";
+        } else if (voters[_addr]) {
+            return "voter";
+        } else {
+            return "unknown";
+        }
+    }
+
     // 7. Tworzenie głosowania
     function createVoting(
         string memory _title,
         uint256 _startTime,
         uint256 _endTime,
         VotingType _votingType,
+        bytes32 _metaCID,
         bytes32[] memory _propositions
     ) external onlyAdmin {
         require(_startTime > block.timestamp, "Invalid start time");
@@ -88,6 +105,7 @@ contract VotingSystem {
         newVoting.startTime = _startTime;
         newVoting.endTime = _endTime;
         newVoting.votingType = _votingType;
+        newVoting.metaCID = _metaCID;
         newVoting.exists = true;
 
         votingCount++;
@@ -153,6 +171,7 @@ contract VotingSystem {
             id: v.id,
             title: v.title,
             startTime: v.startTime,
+            metaCID: v.metaCID,
             endTime: v.endTime,
             propositions: v.propositions,
             votingType: v.votingType
@@ -269,6 +288,7 @@ contract VotingSystem {
                 id: votingId,
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
+                metaCID: votings[votingId].metaCID,
                 endTime: votings[votingId].endTime,
                 propositions: votings[votingId].propositions,
                 votingType: votings[votingId].votingType
@@ -320,6 +340,7 @@ contract VotingSystem {
                 id: votingId,
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
+                metaCID: votings[votingId].metaCID,
                 endTime: votings[votingId].endTime,
                 propositions: votings[votingId].propositions,
                 votingType: votings[votingId].votingType
@@ -374,6 +395,7 @@ contract VotingSystem {
                 id: votingId,
                 title: votings[votingId].title,
                 startTime: votings[votingId].startTime,
+                metaCID: votings[votingId].metaCID,
                 endTime: votings[votingId].endTime,
                 propositions: votings[votingId].propositions,
                 votingType: votings[votingId].votingType

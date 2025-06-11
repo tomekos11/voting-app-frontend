@@ -80,16 +80,8 @@
 
 <script setup lang="ts">
 import { ethers } from 'ethers';
-import type { PropositionOffChain, PropositionOffChainExtend } from '~/types/types';
 
-interface VotingParams {
-  metaCID?: string;
-  title: string;
-  startTime: number;
-  endTime: number;
-  votingType: 0 | 1;
-  propositions: PropositionOffChainExtend[];
-}
+import type { PropositionOffChain, PropositionOffChainExtend, VotingParams } from '~/types/types';
 
 const ethereumStore = useEthereumStore();
 
@@ -169,7 +161,8 @@ const onSubmit = async () => {
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,
-        preparedData.votingType,
+        preparedData.votingType, 
+        preparedData.metaCID,
         hashes
       );
 

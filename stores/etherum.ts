@@ -2,7 +2,7 @@ import { defineStore, skipHydrate } from 'pinia';
 import { ethers } from 'ethers';
 import { shallowRef, computed } from 'vue';
 import { whenever } from '@vueuse/core';
-import { Abi__factory, type Abi } from '~/types';
+import { VotingSystem__factory, type VotingSystem } from '~/types';
 import { contractAddress } from '~/config';
 
 export const useEthereumStore = defineStore('ethereum', () => {
@@ -12,7 +12,7 @@ export const useEthereumStore = defineStore('ethereum', () => {
   const provider = shallowRef<ethers.BrowserProvider | null>(null);
   const signer = shallowRef<ethers.Signer | null>(null);
 
-  const contract = ref<Abi | null>(null);
+  const contract = ref<VotingSystem | null>(null);
 
   const connection = ref<'problems_with_wallet' | 'no_provider' | 'needs_provider_login' | 'established' | null>(null);
 
@@ -37,7 +37,7 @@ export const useEthereumStore = defineStore('ethereum', () => {
     const runner = signer.value || provider.value;
     if (!runner) throw new Error('Brak połączenia z blockchainem');
     
-    contract.value = Abi__factory.connect(contractAddress, runner);
+    contract.value = VotingSystem__factory.connect(contractAddress, runner);
 
     return contract.value;
   };

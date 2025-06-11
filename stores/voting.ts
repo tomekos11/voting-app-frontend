@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import { shallowRef, type ShallowRef } from 'vue';
-import type { Abi } from '~/types';
+import type { VotingSystem } from '~/types';
 import type { Voting } from '~/types/types';
 
 export const useVotingStore = defineStore('voting', () => {
   const ethereumStore = useEthereumStore();
-  const contract = shallowRef<Abi | null>(null);
+  const contract = shallowRef<VotingSystem | null>(null);
   
   // State
   const initialized = ref(false);

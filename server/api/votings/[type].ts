@@ -1,5 +1,5 @@
 import { getBlockchainComponents, initBlockchainConnection } from '~/config';
-import type { Abi } from '~/types';
+import type { VotingSystem } from '~/types';
 import type { Voting, VotingType } from '~/types/types';
 
 interface Response {
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const methodMap: Record<VotingType, keyof Abi> = {
+    const methodMap: Record<VotingType, keyof VotingSystem> = {
       incoming: 'getIncomingVotings',
       active: 'getActiveVotings',
       completed: 'getCompletedVotings'

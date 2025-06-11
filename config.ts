@@ -1,11 +1,11 @@
 
 import { ethers } from 'ethers';
-import { Abi__factory, type Abi } from '~/types';
+import { VotingSystem__factory, type VotingSystem } from '~/types';
 
-export const contractAddress = '0xf1925365e426b11c63b661119a0de23b278af1e1';
+export const contractAddress = '0xf8cbd27677d06daea49ff9e5214115fdbf3f0a7a';
 
 let provider: ethers.JsonRpcProvider;
-let contract: Abi;
+let contract: VotingSystem;
 
 export const initBlockchainConnection = () => {
   const config = useRuntimeConfig();
@@ -19,7 +19,7 @@ export const initBlockchainConnection = () => {
   }
 
   if (!contract && contractAddress) {
-    contract = Abi__factory.connect(contractAddress, provider);
+    contract = VotingSystem__factory.connect(contractAddress, provider);
   }
 };
 
