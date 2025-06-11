@@ -35,12 +35,12 @@
             class="w-5 h-5"
           >
         </div>
-        {{ !ethereumStore.connection }}
-        <!-- :loading="!ethereumStore.connection" -->
         <UButton
           v-if="!ethereumStore.address || ethereumStore.connection !== 'established'"
           class="flex items-center p-1 px-3 bg-secondary/10 hover:bg-secondary/15 text-gray-300"
           label="Połącz"
+          :loading="ethereumStore.connection === null"
+          :disabled="false"
           @click="ethereumStore.connect"
         />
 

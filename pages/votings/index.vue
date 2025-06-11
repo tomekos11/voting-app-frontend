@@ -19,6 +19,7 @@
         :ui="{
           item: 'basis-full md:basis-1/2 lg:basis-1/3'
         }"
+        @select="onSelect"
       >
         <UCard 
           class="h-full mx-2 dark:hover:bg-slate-950 hover:bg-green-50 transition-colors"
@@ -213,6 +214,10 @@ const {
 
 const carousel = useTemplateRef('carousel');
 const activeIndex = ref(0);
+
+const onSelect = (index: number) => {
+  activeIndex.value = index;
+};
 
 const select = (index: number) => {
   activeIndex.value = index;
