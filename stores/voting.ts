@@ -122,6 +122,19 @@ export const useVotingStore = defineStore('voting', () => {
     }
   };
 
+  const checkPermissions = async (addres: string) => {
+    if (!contract.value) {
+      throw new Error('Kontrakt nie został zainicjalizowany');
+    }
+
+    if (!ethereumStore.address) {
+      throw new Error('Nie połączono z portfelem');
+    }
+
+    const res = await contract.value.getRole(addres);
+
+    return res;
+  };
 
   const grantPermissionToVote = async (addres: string) => {
     if (!contract.value) {
@@ -132,14 +145,24 @@ export const useVotingStore = defineStore('voting', () => {
       throw new Error('Nie połączono z portfelem');
     }
 
-    try {
-      const res = await contract.value.addVoter(addres);
+    const res = await contract.value.addVoter(addres);
 
-      console.log(res);
-      return res;
-    } catch (err) {
-      console.error(err);
+    return res;
+
+  };
+
+  const revokePermissionToVote = async (addres: string) => {
+    if (!contract.value) {
+      throw new Error('Kontrakt nie został zainicjalizowany');
     }
+
+    if (!ethereumStore.address) {
+      throw new Error('Nie połączono z portfelem');
+    }
+
+    const res = await contract.value.removeVoter(addres);
+
+    return res;
   };
 
   const grantAdminPermissions = async (addres: string) => {
@@ -151,14 +174,9 @@ export const useVotingStore = defineStore('voting', () => {
       throw new Error('Nie połączono z portfelem');
     }
 
-    try {
-      const res = await contract.value.addAdmin(addres);
+    const res = await contract.value.addAdmin(addres);
 
-      console.log(res);
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
+    return res;
 
   };
 
@@ -207,7 +225,9 @@ export const useVotingStore = defineStore('voting', () => {
     checkRole,
     fetchVotings,
 
+    checkPermissions,
     grantPermissionToVote,
+    revokePermissionToVote,
     grantAdminPermissions,
 
     vote,
