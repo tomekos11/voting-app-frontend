@@ -80,15 +80,15 @@
 
 <script setup lang="ts">
 import { ethers } from 'ethers';
-import type { PropositionOffChain } from '~/types/types';
+import type { PropositionOffChain, PropositionOffChainExtend } from '~/types/types';
 
 interface VotingParams {
   metaCID?: string;
   title: string;
-  startTime: bigint;
-  endTime: bigint;
+  startTime: number;
+  endTime: number;
   votingType: 0 | 1;
-  propositions: string[];
+  propositions: PropositionOffChainExtend[];
 }
 
 const ethereumStore = useEthereumStore();
@@ -116,15 +116,34 @@ const countSHA = (data: string) => {
   return hash;
 };
 
+const prepareProposition = (prop: {
+  name: string;
+  details: { key: string; value: string | number }[];
+  img?: string;
+}): PropositionOffChainExtend => {
+  const minimalProp = {
+    name: prop.name,
+    details: prop.details,
+    img: prop.img ?? ''
+  };
+
+  const hash = countSHA(JSON.stringify(minimalProp));
+
+  return {
+    ...minimalProp,
+    hash
+  };
+};
+
 
 const onSubmit = async () => {
   // Konwersja danych do formatu kompatybilnego z blockchain
   const preparedData: VotingParams = {
     title: title.value,
-    startTime: BigInt(Math.floor(new Date(startTime.value).getTime() / 1000)),
-    endTime: BigInt(Math.floor(new Date(endTime.value).getTime() / 1000)),
+    startTime: Number(Math.floor(new Date(startTime.value).getTime() / 1000)),
+    endTime: Number(Math.floor(new Date(endTime.value).getTime() / 1000)),
     votingType: votingType.value,
-    propositions: propositions.value.map(proposition => countSHA(JSON.stringify(proposition)))
+    propositions: propositions.value.map(prepareProposition)
   };
 
   console.log(preparedData.startTime);
@@ -143,17 +162,20 @@ const onSubmit = async () => {
     try {
       loading.value = true;
 
+      const hashes = preparedData.propositions.map(p => p.hash);
+
+
       const res = await ethereumStore.contract.createVoting(
         preparedData.title,
         preparedData.startTime,
         preparedData.endTime,
         preparedData.votingType,
-        preparedData.propositions
+        hashes
       );
 
       console.log(res);
 
-      const res2 = await useFetchWithAuth('/api/cos-tam', {
+      const res2 = await useFetchWithAuth('/api/createVote', {
         method: 'post',
         body: preparedData,
       });
