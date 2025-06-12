@@ -33,8 +33,14 @@
           Wynik operacji
         </template>
         <template #description>
+          <div>
+            <b>Error code:</b> {{ error.code }}
+          </div>
+          <div>
+            <b>Error message:</b> {{ error.reason }}
+          </div>
           <div v-if="error.code === 'UNCONFIGURED_NAME' || error.code === 'INVALID_ARGUMENT'">
-            Adres jest niepoprawny. Rollback.
+            <b>Wytłumaczenie:</b> Adres jest niepoprawny. Rollback.
           </div>
         </template>
       </UAlert>
@@ -67,6 +73,8 @@ const showResult = computed({
 });
 
 const grantPermissions = async () => {
+  error.value = null;
+
   try {
     const res = await votingStore.grantPermissionToVote(address.value);
 
@@ -78,6 +86,8 @@ const grantPermissions = async () => {
 };
 
 const grantAdminPermissions = async () => {
+  error.value = null;
+
   try {
     const res = await votingStore.grantAdminPermissions(address.value);
 
@@ -89,6 +99,8 @@ const grantAdminPermissions = async () => {
 };
 
 const revokePermissions = async () => {
+  error.value = null;
+
   try {
     const res = await votingStore.revokePermissionToVote(address.value);
     result.value = 'Poprawnie odebrano uprawnienia';
@@ -99,6 +111,8 @@ const revokePermissions = async () => {
 };
 
 const checkPermissions = async () => {
+  error.value = null;
+
   try {
     const res = await votingStore.checkPermissions(address.value);
     result.value = res;

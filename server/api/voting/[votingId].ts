@@ -40,13 +40,13 @@ export default defineEventHandler(async (event) => {
     const response: Voting = {
       id: Number(voting.id),
       title: voting.title,
+      cid: voting.metaCID,
       startTime: DateTime.fromSeconds(Number(voting.startTime)).toISO(),
       endTime: DateTime.fromSeconds(Number(voting.endTime)).toISO(),
       propositions: voting.propositions,
       votingType: voting.votingType === 0 ? 'Public' : 'Private',
     };
 
-    console.log(voting);
     return response;
 
   } catch (error) {

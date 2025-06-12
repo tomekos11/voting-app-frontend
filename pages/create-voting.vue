@@ -103,6 +103,16 @@
             <UButton label="Stwórz głosowanie" icon="i-lucide-circle-arrow-right" :disabled="propositions.length < 2" @click="submit" />
           </div>
 
+          <UModal v-model:open="showSuccessModal" title="Wynik tworzenia głosowania">
+            <template #body>
+              <div>
+                Pomyślnie stworzono głosowanie
+              </div>
+
+              <UButton label="Przejdź do listy głosowań" to="/votings" />
+            </template>
+          </UModal>
+
 
         </UCard>
       </template>
@@ -129,7 +139,7 @@ const votingType = ref<0 | 1>(0);
 const propositions = ref<PropositionOffChain[]>([]);
 
 const loading = ref(false);
-
+const showSuccessModal = ref(false);
 
 const items: StepperItem[] = [
   {
@@ -217,6 +227,7 @@ const submit = async () => {
         body: preparedData,
       });
 
+      showSuccessModal.value = true;
       console.log(res2);
 
     } catch (e){

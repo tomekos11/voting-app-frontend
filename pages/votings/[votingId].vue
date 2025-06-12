@@ -22,6 +22,7 @@
             v-model="selectedProposition"
             :items="propositionOptions"
             :loading="pending"
+            :disabled="voted"
             placeholder="Wybierz z listy"
             :ui="{ base: 'w-full' }"
           >
@@ -82,6 +83,23 @@
             </UAlert>
           </template>
         </UCollapsible>
+
+        <!-- voted -->
+
+        <UCollapsible v-model:open="voted">
+          <template #content>
+            <UAlert icon="i-lucide-circle-alert" class="bg-transparent text-red border mt-2" >
+              <template #title>
+                Akcja udana
+              </template>
+              <template #description>
+                <div>
+                  Pomyślnie oddano głos na Propozycje #{{ selectedPropositionId }} ({{ selectedProposition }})
+                </div>
+              </template>
+            </UAlert>
+          </template>
+        </UCollapsible>
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
@@ -134,6 +152,31 @@ const {
   refresh 
 } = useFetch<Voting>(`/api/voting/${route.params.votingId}`);
 
+
+const { data: offchainData, refresh: refreshOffchainData,  } = useAsyncData(async () => {
+  try {
+    const res = await useFetchWithAuth('/api/voting', {
+      params: {
+        cid: infuraData.value?.cid
+      }
+    });
+
+    return res;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}, {
+  immediate: false,
+  lazy: true,
+});
+
+watch(() => infuraData.value?.cid, (nv) => {
+  if(nv) {
+    refreshOffchainData();
+  }
+}, { immediate: true });
+
 const propositionOptions = computed(() =>
   infuraData.value?.propositions.map((hash, idx) => ({
     label: `Propozycja #${idx + 1} (${hash.slice(0, 8)}...)`,
@@ -152,6 +195,7 @@ const selectedPropositionId = computed(() => {
 const isDisabled = computed(() => selectedPropositionId.value === null || selectedPropositionId.value === undefined || showNoWalletConnectionAlert.value);
 
 const loading = ref(false);
+const voted = ref(false);
 
 const vote = async () => {
   if(ethereumStore.connection !== 'established') {
@@ -165,6 +209,9 @@ const vote = async () => {
   loading.value = true;
   try{
     await votingStore.vote(infuraData.value.id, selectedPropositionId.value);
+
+    console.log(1);
+    voted.value = true;
   } catch (e) {
     console.error(e);
     voteError.value = e.message;

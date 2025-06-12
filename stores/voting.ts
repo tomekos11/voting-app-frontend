@@ -103,16 +103,17 @@ export const useVotingStore = defineStore('voting', () => {
       );
 
       // Czekaj na potwierdzenie
-      const receipt = await tx.wait();
-      if (!receipt?.status) {
-        throw new Error('Transakcja nie została potwierdzona');
-      }
+      // const receipt = await tx.wait();
+      // if (!receipt?.status) {
+      //   throw new Error('Transakcja nie została potwierdzona');
+      // }
 
       // Aktualizuj dane
       //   await fetchVotings('active', 0, 5);
       //   await fetchVotings('completed', 0, 5);
 
-      return receipt;
+      // return receipt;
+      return true;
 
     } catch (error) {
       if (error instanceof Error) {
