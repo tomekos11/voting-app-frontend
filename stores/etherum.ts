@@ -81,9 +81,7 @@ export const useEthereumStore = defineStore('ethereum', () => {
       signer.value = await provider.value.getSigner();
 
       // Dodatkowa logika tylko przy inicjalizacji
-      if (!requestLogin) {
-        getContract();
-      }
+      getContract();
 
       await updateBalance();
       connection.value = 'established';

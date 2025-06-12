@@ -113,6 +113,7 @@
 <script setup lang="ts">
 import type { StepperItem } from '@nuxt/ui';
 import { ethers } from 'ethers';
+import { DateTime } from 'luxon';
 import type { Ref } from 'vue';
 import type { PropositionOffChain, PropositionOffChainExtend, VotingParams } from '~/types/types';
 
@@ -184,9 +185,6 @@ const submit = async () => {
     propositions: propositions.value.map(prepareProposition)
   };
 
-  console.log(preparedData.startTime);
-  console.log(preparedData.endTime);
-  
   if(!ethereumStore.contract) {
     console.warn('problem z kontraktem');
     return;
@@ -264,7 +262,6 @@ const throwError = (errorRef: Ref<string>, _step: number, error: string) => {
 const validateVotingParams = (params: VotingParams) => {
   clearErrors();
 
-  console.log(params);
   if(!params.title) {
     throwError(titleError, 0, 'Brak tytułu');
   }
@@ -283,6 +280,12 @@ const validateVotingParams = (params: VotingParams) => {
 
   if(params.startTime >= params.endTime) {
     throwError(timeError, 1, 'Niepoprawny zakres dat (pierwsza później niż druga)');
+  }
+
+  const nowISO = Number(DateTime.now().toMillis() / 1000);
+
+  if(params.startTime < nowISO || params.startTime < nowISO) {
+    throwError(timeError, 1, 'Głosowanie musi się zacząć w przyszłości. Niepoprawna data');
   }
 
   if(params.propositions.some(c => c.length === 0)) {
