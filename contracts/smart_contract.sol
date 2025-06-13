@@ -29,7 +29,7 @@ contract VotingSystem {
         bytes32 metaCID;
         bytes32[] propositions;
         mapping(address => bool) hasVoted;
-        mapping(address => uint256) votes;
+        mapping(address => uint256) vote;
         bool exists;
     }
 
@@ -139,7 +139,7 @@ contract VotingSystem {
         require(_propositionIndex < voting.propositions.length, "Invalid proposition");
 
         voting.hasVoted[msg.sender] = true;
-        voting.votes[msg.sender] = _propositionIndex;
+        voting.vote[msg.sender] = _propositionIndex;
         
         emit VoteCast(msg.sender, _votingId, _propositionIndex);
     }
@@ -403,5 +403,73 @@ contract VotingSystem {
         }
         
         totalCompleted = counter;
+    }
+
+    struct VotingInfoWithChoice {
+        uint256 id;
+        string title;
+        uint256 startTime;
+        uint256 endTime;
+        bytes32 metaCID;
+        bytes32[] propositions;
+        VotingType votingType;
+        bytes32 choice;
+    }
+
+    function getVotingHistory(
+    address user,
+    uint256 page,
+    uint256 perPage
+    ) public view returns (
+        VotingInfoWithChoice[] memory userVotingsInfoWithChoice,
+        uint256 totalVotings
+    ) {
+        require(page >= 0, "Page must be at least 0");
+        require(perPage > 0, "perPage must be at least 1");
+        
+        // 1. Zbieranie wszystkich głosowań użytkownika
+        uint256[] memory allVotes = new uint256[](votingCount);
+        uint256 counter;
+        
+        for(uint256 i = 0; i < votingCount; i++) {
+            if(votings[i].hasVoted[user]) {
+                allVotes[counter] = i;
+                counter++;
+            }
+        }
+        
+        // 2. Sortowanie po dacie zakończenia (najnowsze pierwsze)
+        for(uint256 i = 0; i < counter; i++) {
+            for(uint256 j = i+1; j < counter; j++) {
+                if(votings[allVotes[i]].endTime < votings[allVotes[j]].endTime) {
+                    (allVotes[i], allVotes[j]) = (allVotes[j], allVotes[i]);
+                }
+            }
+        }
+        
+        // 3. Logika paginacji
+        uint256 start = page * perPage;
+        if(start >= counter) return (new VotingInfoWithChoice[](0), counter);
+        
+        uint256 end = (start + perPage > counter) ? counter : start + perPage;
+        userVotingsInfoWithChoice = new VotingInfoWithChoice[](end - start);
+        
+        for(uint256 k = 0; k < end - start; k++) {
+            uint256 votingId = allVotes[start + k];
+            uint256 choiceIndex = votings[votingId].vote[user];
+
+            userVotingsInfoWithChoice[k] = VotingInfoWithChoice({
+                id: votingId,
+                title: votings[votingId].title,
+                startTime: votings[votingId].startTime,
+                metaCID: votings[votingId].metaCID,
+                endTime: votings[votingId].endTime,
+                propositions: votings[votingId].propositions,
+                votingType: votings[votingId].votingType,
+                choice: votings[votingId].propositions[choiceIndex]
+            });
+        }
+        
+        totalVotings = counter;
     }
 }
