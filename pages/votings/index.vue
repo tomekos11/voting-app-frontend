@@ -78,7 +78,7 @@
 
 
       <!-- kulki nawigacyjne -->
-      <div class="flex gap-2 justify-center pt-4 max-w-xs mx-auto" >
+      <div v-if="activeVotings.data.length > 1" class="flex gap-2 justify-center pt-4 max-w-xs mx-auto">
         <div
           v-for="(item, index) in activeVotings.data"
           :key="index"

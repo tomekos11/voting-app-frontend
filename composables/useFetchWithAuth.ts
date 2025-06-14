@@ -24,33 +24,34 @@ export const useFetchWithAuth = async <T>(url: string, options: NitroFetchOption
     headers,
     ...options,
   }).catch(async (error) => {
-    const isSSR = import.meta.server;
+    console.error(error);
+    // const isSSR = import.meta.server;
 
     // Logika dla SSR
-    if (isSSR) {
-      const statusCode = error.statusCode || error.response?.status;
-      const isConnectionError = error.code === 'ECONNREFUSED' || error?.cause?.message === 'fetch failed';
+    // if (isSSR) {
+    //   const statusCode = error.statusCode || error.response?.status;
+    //   const isConnectionError = error.code === 'ECONNREFUSED' || error?.cause?.message === 'fetch failed';
 
-      if (statusCode === 500 || isConnectionError) {
-        throw createError({
-          statusCode: 500,
-          statusMessage: 'Błąd połączenia z API',
-          fatal: true,
-        });
-      }
-    }
-    else {
-      const shouldRedirect = 
-        error?.response?.status === 500 ||
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('ERR_CONNECTION_REFUSED');
+    //   if (statusCode === 500 || isConnectionError) {
+    //     throw createError({
+    //       statusCode: 500,
+    //       statusMessage: 'Błąd połączenia z API',
+    //       fatal: true,
+    //     });
+    //   }
+    // }
+    // else {
+    //   const shouldRedirect = 
+    //     error?.response?.status === 500 ||
+    //     error.message?.includes('Failed to fetch') ||
+    //     error.message?.includes('ERR_CONNECTION_REFUSED');
 
-      if (shouldRedirect) {
-        await navigateTo('/500', { redirectCode: 302, replace: true });
-        throw new Error('Client redirect triggered');
-      }
-    }
+    //   if (shouldRedirect) {
+    //     await navigateTo('/500', { redirectCode: 302, replace: true });
+    //     throw new Error('Client redirect triggered');
+    //   }
+    // }
 
-    throw error;
+    // throw error;
   });
 };

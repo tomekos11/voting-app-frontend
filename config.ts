@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 import { VotingSystem__factory, type VotingSystem } from '~/types';
 
-export const contractAddress = '0xf8cbd27677d06daea49ff9e5214115fdbf3f0a7a';
+export const contractAddress = '0xcf8ce6fe90a0e63abea9f6d50bd90e51a5415bcb';
 
 let provider: ethers.JsonRpcProvider;
 let contract: VotingSystem;

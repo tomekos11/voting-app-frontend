@@ -19,6 +19,10 @@ export interface Voting {
   propositions: string[];
 }
 
+export interface VotingWithChoice extends Voting {
+  choice: string;
+}
+
 export interface PropositionOffChainExtend extends PropositionOffChain {
   hash: string;
 }

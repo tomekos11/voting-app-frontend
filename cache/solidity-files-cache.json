@@ -1,9 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\Michal\\Desktop\\voting-app\\voting-app-frontend\\contracts\\smart_contract.sol": {
-      "lastModificationDate": 1749675656502,
-      "contentHash": "a248b7582dd6cb418669761f07a9def9",
+    "C:\\Users\\tomek\\Desktop\\voting-app-frontend\\contracts\\smart_contract.sol": {
+      "lastModificationDate": 1749836389458,
+      "contentHash": "8bc7dd32f2a5b4f29d5078390d160e54",
       "sourceName": "contracts/smart_contract.sol",
       "solcConfig": {
         "version": "0.8.28",

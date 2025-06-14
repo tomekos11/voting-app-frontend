@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowRef, type ShallowRef } from 'vue';
 import type { VotingSystem } from '~/types';
-import type { Voting } from '~/types/types';
+import type { Voting, VotingWithChoice } from '~/types/types';
 
 export const useVotingStore = defineStore('voting', () => {
   const ethereumStore = useEthereumStore();
@@ -18,6 +18,9 @@ export const useVotingStore = defineStore('voting', () => {
     active: [] as Voting[],
     completed: [] as Voting[]
   });
+
+  const history = ref<VotingWithChoice[]>([]);
+  const historyTotal = ref<null | number>(null);
 
   // Getters
   const totalPages = computed(() => (perPage: number) => ({
@@ -80,6 +83,27 @@ export const useVotingStore = defineStore('voting', () => {
     return { data: votings[type], total: Number(total) };
   };
 
+  const fetchHistory = async (address: string, page = 0, perPage = 10) => {
+    if (!contract.value) throw new Error('Contract not initialized');
+    
+    const [votingData, total] = await contract.value.getVotingHistory(address, page, perPage);
+    
+    history.value = votingData.map(v => ({
+      id: Number(v.id),
+      title: v.title,
+      startTime: Number(v.startTime),
+      endTime: Number(v.endTime),
+      propositions: v.propositions,
+      choice: v.choice,
+      cid: v.metaCID,
+      votingType: v.votingType === 0n ? 'Public' : 'Private'
+    }));
+
+    historyTotal.value = Number(total);
+        
+    return { data: history.value, total: Number(total) };
+  };
+
   const vote = async (votingId: number, propositionId: number) => {
     if (!contract.value) {
       throw new Error('Kontrakt nie został zainicjalizowany');
@@ -97,7 +121,12 @@ export const useVotingStore = defineStore('voting', () => {
       }
 
       // Wyślij transakcję
-      const tx = await contract.value.vote(
+      // const tx = await contract.value.vote(
+      //   BigInt(votingId),
+      //   BigInt(propositionId)
+      // );
+
+      await contract.value.vote(
         BigInt(votingId),
         BigInt(propositionId)
       );
@@ -194,7 +223,6 @@ export const useVotingStore = defineStore('voting', () => {
   const initialize = async () => {
     if (initialized.value && ethereumStore.contract) return;
 
-    contract.value = ethereumStore.contract;
     await Promise.all([
       checkRole(),
     //   fetchVotings('incoming', 0, 5),
@@ -204,11 +232,6 @@ export const useVotingStore = defineStore('voting', () => {
     
     initialized.value = true;
   };
-
-
-  // whenever(() => ethereumStore.contract, () => {
-  //   initialize();
-  // });
 
   watch(() => ethereumStore.connection, (nv) => {
     if(nv === 'established') {
@@ -220,18 +243,18 @@ export const useVotingStore = defineStore('voting', () => {
   const hasAdminPermissions = computed(() => role.value === 'admin' || role.value === 'chairman');
 
   return {
-    // State
-    // contract: contract as ShallowRef<Abi>,
     initialized,
     votingsCount,
     role,
     votings,
     hasAdminPermissions,
     
-    // Getters
+    history,
+    historyTotal,
+    fetchHistory,
+
     totalPages,
     
-    // Actions
     checkRole,
     fetchVotings,
 

@@ -51,6 +51,39 @@ export type VotingInfoStructOutput = [
   votingType: bigint;
 };
 
+export declare namespace VotingSystem {
+  export type VotingInfoWithChoiceStruct = {
+    id: BigNumberish;
+    title: string;
+    startTime: BigNumberish;
+    endTime: BigNumberish;
+    metaCID: BytesLike;
+    propositions: BytesLike[];
+    votingType: BigNumberish;
+    choice: BytesLike;
+  };
+
+  export type VotingInfoWithChoiceStructOutput = [
+    id: bigint,
+    title: string,
+    startTime: bigint,
+    endTime: bigint,
+    metaCID: string,
+    propositions: string[],
+    votingType: bigint,
+    choice: string
+  ] & {
+    id: bigint;
+    title: string;
+    startTime: bigint;
+    endTime: bigint;
+    metaCID: string;
+    propositions: string[];
+    votingType: bigint;
+    choice: string;
+  };
+}
+
 export interface VotingSystemInterface extends Interface {
   getFunction(
     nameOrSignature:
@@ -78,6 +111,8 @@ export interface VotingSystemInterface extends Interface {
       | "getVoting(uint256)"
       | "getVotingBatch"
       | "getVotingBatch(uint256[])"
+      | "getVotingHistory"
+      | "getVotingHistory(address,uint256,uint256)"
       | "getVotingStats"
       | "getVotingStats(uint256)"
       | "getVotingStatus"
@@ -207,6 +242,14 @@ export interface VotingSystemInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getVotingBatch(uint256[])",
     values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotingHistory",
+    values: [AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getVotingHistory(address,uint256,uint256)",
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getVotingStats",
@@ -343,6 +386,14 @@ export interface VotingSystemInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getVotingBatch(uint256[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotingHistory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getVotingHistory(address,uint256,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -653,6 +704,28 @@ export interface VotingSystem extends BaseContract {
     "view"
   >;
 
+  getVotingHistory: TypedContractMethod<
+    [user: AddressLike, page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoWithChoiceStructOutput[], bigint] & {
+        userVotingsInfoWithChoice: VotingSystem.VotingInfoWithChoiceStructOutput[];
+        totalVotings: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  "getVotingHistory(address,uint256,uint256)": TypedContractMethod<
+    [user: AddressLike, page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoWithChoiceStructOutput[], bigint] & {
+        userVotingsInfoWithChoice: VotingSystem.VotingInfoWithChoiceStructOutput[];
+        totalVotings: bigint;
+      }
+    ],
+    "view"
+  >;
+
   getVotingStats: TypedContractMethod<
     [_votingId: BigNumberish],
     [
@@ -919,6 +992,30 @@ export interface VotingSystem extends BaseContract {
   ): TypedContractMethod<
     [ids: BigNumberish[]],
     [[string[], string[][]] & { titles: string[]; cids: string[][] }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getVotingHistory"
+  ): TypedContractMethod<
+    [user: AddressLike, page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoWithChoiceStructOutput[], bigint] & {
+        userVotingsInfoWithChoice: VotingSystem.VotingInfoWithChoiceStructOutput[];
+        totalVotings: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getVotingHistory(address,uint256,uint256)"
+  ): TypedContractMethod<
+    [user: AddressLike, page: BigNumberish, perPage: BigNumberish],
+    [
+      [VotingSystem.VotingInfoWithChoiceStructOutput[], bigint] & {
+        userVotingsInfoWithChoice: VotingSystem.VotingInfoWithChoiceStructOutput[];
+        totalVotings: bigint;
+      }
+    ],
     "view"
   >;
   getFunction(
